@@ -29,19 +29,33 @@ class SubCategoryView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.main,
       body: SafeArea(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: AppColors.main,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _header(context),
-                _body(context)
-              ],
-            ),
-          ),
-        ),
+        child: Obx((){
+          return Stack(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: AppColors.main,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _header(context),
+                      _body(context)
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(child: homeController.loading.value?Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: Colors.black.withOpacity(0.7),
+                child: Center(
+                  child: CircularProgressIndicator(color: Colors.white,),
+                ),
+              ):Center())
+            ],
+          );
+        }),
       ),
     );
   }
@@ -99,18 +113,7 @@ class SubCategoryView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          //todo something
-                        },
-                        child: SvgPicture.asset('assets/icons/sort.svg',
-                          width: 20,height: 20,
-                        ),
-                      )
-                    ],
-                  ),
+
                   IconButton(
                       icon: const Icon(Icons.search,
                           color: Colors.white),
