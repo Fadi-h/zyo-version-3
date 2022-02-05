@@ -20,6 +20,7 @@ class Languages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: AppColors.main,
       body: Obx(() => SafeArea(
         child: Container(
           width: MediaQuery.of(context).size.width,

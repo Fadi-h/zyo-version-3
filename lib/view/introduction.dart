@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
 import 'package:zyo_version_1/controller/introduction_controller.dart';
 import 'package:zyo_version_1/view/registation.dart';
@@ -13,6 +14,7 @@ class Introduction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.main,
       body: SafeArea(
         child: Container(
           width: MediaQuery.of(context).size.width,

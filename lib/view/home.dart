@@ -30,6 +30,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: homeController.key,
+      backgroundColor: AppColors.main,
       bottomNavigationBar: _btnNavBar(context),
       body: Obx(() {
         return  homeController.select_nav_bar == 0 ? _home(context) :

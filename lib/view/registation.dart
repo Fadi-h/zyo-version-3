@@ -15,6 +15,7 @@ class Registration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.main,
       key: registrationController.globalKey,
       body: SafeArea(
           child: Obx(() => Stack(

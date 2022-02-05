@@ -27,6 +27,7 @@ class SubCategoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.main,
       body: SafeArea(
         child: Container(
           width: MediaQuery.of(context).size.width,

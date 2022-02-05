@@ -13,6 +13,7 @@ class OrderConfirmed extends StatelessWidget {
       Get.to(() => Home());
     });
     return Scaffold(
+      backgroundColor: AppColors.main,
       body: SafeArea(
         child: Container(
           width: MediaQuery.of(context).size.width,

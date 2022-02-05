@@ -45,6 +45,7 @@ class ProductInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.main,
       body: Obx(()=> SafeArea(
         child:  CustomScrollView(
           slivers: [

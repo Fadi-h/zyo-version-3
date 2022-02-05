@@ -20,6 +20,7 @@ class NewCollection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: AppColors.main,
       body: WillPopScope(
         onWillPop: homeController.onWillPop,
         child: Obx((){
