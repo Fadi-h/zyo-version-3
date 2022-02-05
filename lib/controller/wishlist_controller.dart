@@ -8,6 +8,7 @@ import 'package:zyo_version_1/model/product.dart';
 
 class WishListController extends GetxController{
   RxList<Product> wishlist = <Product>[].obs;
+  var loading = false.obs;
   // List<MyProduct> recently = <MyProduct>[].obs;
   List<Product> rate = <Product>[].obs;
 

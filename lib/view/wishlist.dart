@@ -6,10 +6,13 @@ import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/controller/home_controller.dart';
 import 'package:zyo_version_1/controller/wishlist_controller.dart';
 
-class Wishlist extends StatelessWidget {
-  Wishlist({Key? key}) : super(key: key);
+class WishList extends StatefulWidget {
 
+  @override
+  _WishListState createState() => _WishListState();
+}
 
+class _WishListState extends State<WishList> {
   WishListController wishlistController = Get.find();
   HomeController homeController = Get.find();
 
@@ -19,23 +22,36 @@ class Wishlist extends StatelessWidget {
         backgroundColor: AppColors.main,
         body: WillPopScope(
           onWillPop: homeController.onWillPop,
-          child: SafeArea(
-            child:Obx((){
-              return  Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                color: AppColors.main,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _header(context),
-                      _body(context)
-                    ],
+          child: Obx((){
+            return SafeArea(
+              child: Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    color: AppColors.main,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _header(context),
+                          _body(context)
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              );
-            }),
-          ),
+                  Positioned(child: homeController.loading.value?Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    color: Colors.black.withOpacity(0.7),
+                    child: Center(
+                      child: CircularProgressIndicator(color: Colors.white,),
+                    ),
+                  ):Center())
+                ],
+              ),
+
+            );
+          }),
         )
     );
   }
@@ -75,47 +91,56 @@ class Wishlist extends StatelessWidget {
     );
   }
   _list_wishlist(BuildContext context, int index) {
-    return Column(
-      children: [
-        Expanded(
-          flex: 7,
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.3,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              image: DecorationImage(
-                  image: NetworkImage(
-                      wishlistController.wishlist[index].image.toString().replaceAll("localhost", "10.0.2.2")
-                  ),
-                  fit: BoxFit.cover
+    return GestureDetector(
+      onTap: (){
+          homeController.go_to_product_page(wishlistController.wishlist[index].id);
+      },
+      child: Column(
+        children: [
+          Expanded(
+            flex: 7,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.3,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                image: DecorationImage(
+                    image: NetworkImage(
+                        wishlistController.wishlist[index].image.toString().replaceAll("localhost", "10.0.2.2")
+                    ),
+                    fit: BoxFit.cover
+                ),
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(5),
-              child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: GestureDetector(
-                    onTap: () {
-                      //wishlistController.wishlist.value = !wishlistController.wishlist.value;
-                      wishlistController.delete_from_wishlist(wishlistController.wishlist.value[index]);
-                    },
-                    child: Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                      size: 25,
-                    )
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: GestureDetector(
+                        onTap: () {
+                          //wishlistController.wishlist.value = !wishlistController.wishlist.value;
+                          wishlistController.delete_from_wishlist(wishlistController.wishlist.value[index]);
+                          setState(() {
+                            wishlistController.loading.value = !wishlistController.loading.value;
+                            print(wishlistController.loading.value);
+                          });
+                        },
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 25,
+                        )
 
-                  )
+                    )
+                ),
               ),
-            ),
-          ),),
-        Expanded(
-          flex: 1,
-          child:  _price(context,index),),
-        Expanded(
-          child: _title(context,index),),
-      ],
+            ),),
+          Expanded(
+            flex: 1,
+            child:  _price(context,index),),
+          Expanded(
+            child: _title(context,index),),
+        ],
+      ),
     );
   }
   _price(BuildContext context,int index) {
@@ -125,7 +150,7 @@ class Wishlist extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Text(
           (wishlistController.wishlist[index].price*Global.currency_covert).toStringAsFixed(2)
-          +" "+App_Localization.of(context)!.translate(Global.currency_code),
+              +" "+App_Localization.of(context)!.translate(Global.currency_code),
           style: TextStyle(
               color: Colors.white,
               fontSize: 18
@@ -149,5 +174,9 @@ class Wishlist extends StatelessWidget {
     );
   }
 }
+
+
+
+
 
 

@@ -63,6 +63,7 @@ class SubCategoryView extends StatelessWidget {
   _header(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.93,
+
       height: MediaQuery.of(context).size.height * 0.12,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

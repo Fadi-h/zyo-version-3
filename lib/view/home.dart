@@ -36,7 +36,7 @@ class Home extends StatelessWidget {
         return  homeController.select_nav_bar == 0 ? _home(context) :
         homeController.select_nav_bar == 1 ? Categories() :
         homeController.select_nav_bar == 2 ? NewCollection() :
-        homeController.select_nav_bar == 3 ? Wishlist() : Settings();
+        homeController.select_nav_bar == 3 ? WishList() : Settings();
       }),
     );
   }
