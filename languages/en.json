@@ -187,5 +187,6 @@
   "small_pass": "Password must be 6 characters at least",
   "pass": "password is changed successfully.",
   "AED": "AED",
-  "Dollar": "$"
+  "Dollar": "$",
+  "USD": "USD"
 }

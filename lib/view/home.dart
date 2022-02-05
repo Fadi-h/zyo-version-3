@@ -144,7 +144,7 @@ class Home extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _header(context),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.12,),
                       _body(context)
                     ],
                   ),
@@ -514,7 +514,7 @@ class Home extends StatelessWidget {
             ),
             Container(
               width: MediaQuery.of(context).size.width * 0.90,
-              height: MediaQuery.of(context).size.height * 0.23,
+              height: MediaQuery.of(context).size.height * 0.26,
               child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
@@ -739,6 +739,15 @@ class Home extends StatelessWidget {
                 color: AppColors.main2,
                 fontSize: 13
             ),),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.25,
+          child: Text( homeController.homePage.flashSale[index].title,
+            style: TextStyle(
+                decorationColor: Colors.white,
+                color: AppColors.main2,
+                fontSize: 12
+            ),maxLines: 2,),
         )
       ],
     );
@@ -808,14 +817,26 @@ class Home extends StatelessWidget {
           ),),
         Expanded(
             flex:1,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text((homeController.homePage.home_page_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15
-                ),),
-            ))
+            child:Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text((homeController.homePage.home_page_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                    fontWeight: FontWeight.bold
+                  ),),
+                Text((homeController.homePage.home_page_products[index].title),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                  ),
+                maxLines: 2,
+                ),
+              ],
+            )
+        )
       ],
     );
   }

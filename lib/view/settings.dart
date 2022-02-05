@@ -15,6 +15,7 @@ import 'package:zyo_version_1/view/registation.dart';
 import 'package:zyo_version_1/view/settings/address_book.dart';
 import 'package:zyo_version_1/view/settings/change_pass.dart';
 import 'package:zyo_version_1/view/settings/connect_to_us.dart';
+import 'package:zyo_version_1/view/settings/currencr.dart';
 import 'package:zyo_version_1/view/settings/delete_account.dart';
 import 'package:zyo_version_1/view/settings/languages.dart';
 import 'package:zyo_version_1/view/settings/personal_info.dart';
@@ -468,75 +469,46 @@ class Settings extends StatelessWidget {
     );
   }
   _currency(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(App_Localization.of(context)!.translate("currency"),
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18
-                  ),),
-               Obx((){
-                 return  Column(
-                   children: [
-                     settings_controlller.loading.value?Center():Center(),
-                     DropdownButton<String>(
-                       value: Global.currency_code,
-                       icon: const Icon(Icons.arrow_downward,color: Colors.transparent,),
-                       elevation: 16,
-                       dropdownColor: Colors.black.withOpacity(0.8),
-
-                       style: const TextStyle(color: Colors.grey),
-                       underline: Center(),
-
-                       onChanged: (String? newValue) {
-                         // setState(() {
-                         Api.check_internet().then((net) {
-                           if(net){
-                             Global.currency_code = newValue!;
-                             Store.save_currency(newValue);
-                             settings_controlller.loading.value=!settings_controlller.loading.value;
-                             if(newValue!="AED"){
-                               Api.get_dollar().then((value) {
-                                 Global.currency_covert=value;
-                               });
-                             }else{
-                               Global.currency_covert=1.0;
-                             }
-                           }else{
-                             Get.to(NoInternet());
-                           }
-                         });
-
-                         // });
-                       },
-                       items: <String>['AED', 'Dollar']
-                           .map<DropdownMenuItem<String>>((String value) {
-                         return DropdownMenuItem<String>(
-                           value: value,
-                           child: Text(value,),
-                         );
-                       }).toList(),
+    return GestureDetector(
+      onTap: (){
+        Get.to(()=>CurrencyView());
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(App_Localization.of(context)!.translate("currency"),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18
+                    ),),
+                 Obx((){
+                   return  Padding(
+                     padding: const EdgeInsets.only(top: 10),
+                     child: Column(
+                       children: [
+                         settings_controlller.loading.value?Center():Center(),
+                         Text(App_Localization.of(context)!.translate(Global.currency_code=="AED"?"AED":"USD"),style: TextStyle(color: Colors.grey),),
+                       ],
                      ),
-                   ],
-                 );
-               }),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Icon(
-                Icons.arrow_forward_ios,color: Colors.white,size: 20,
+                   );
+                 }),
+                ],
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Icon(
+                  Icons.arrow_forward_ios,color: Colors.white,size: 20,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

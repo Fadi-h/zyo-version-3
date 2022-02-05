@@ -244,16 +244,27 @@ class NewCollection extends StatelessWidget {
 
                       ),),
                     Expanded(
-                      flex: 1,
-                      child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        (homeController.homePage.new_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+ App_Localization.of(context)!.translate(Global.currency_code),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15
-                        ),),
-                    ))
+                        flex:1,
+                        child:Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(( homeController.homePage.new_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                              ),),
+                            Text(( homeController.homePage.new_products[index].title),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                              maxLines: 2,
+                            ),
+                          ],
+                        )
+                    )
                   ],
                 ),
               );
