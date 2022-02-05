@@ -21,14 +21,13 @@ class Introduction extends StatelessWidget {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/intro/intro.png"),
+              image: AssetImage("assets/intro/ZYO.gif"),
               fit: BoxFit.cover
             )
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _btn(context),
               SizedBox(height: 50,)
             ],
           ),
@@ -43,9 +42,7 @@ class Introduction extends StatelessWidget {
       onTap: () {
         Get.off(()=>Registration());
       },
-      child:Center(
-        child: CircularProgressIndicator(color: Colors.white,),
-      ),
+
     );
   }
 }

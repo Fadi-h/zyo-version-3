@@ -307,7 +307,7 @@ class Cart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                (double.parse(cartController.sub_total.value)*Global.currency_covert).toString()+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                (double.parse(cartController.sub_total.value)*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -505,7 +505,7 @@ class Cart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                (double.parse(cartController.total.value)*Global.currency_covert).toString()+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                (double.parse(cartController.total.value)*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

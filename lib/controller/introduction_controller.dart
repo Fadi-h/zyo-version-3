@@ -52,9 +52,9 @@ class IntroController extends GetxController {
               // print(subCategory.length);
               Api.getProducts(wishlist,subCategory.first.id).then((value) {
                 products=value;
-                // Future.delayed(Duration(milliseconds: 2500)).then((value) {
+                Future.delayed(Duration(milliseconds: 2500)).then((value) {
                   get_page();
-                // });
+                });
 
               });
 
