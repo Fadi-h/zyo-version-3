@@ -59,8 +59,7 @@ class ChangePassword extends StatelessWidget {
   _body(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 10),
-        _old_pass(context),
+
         SizedBox(height: 10),
         _new_pass(context),
         SizedBox(height: 10),
@@ -174,7 +173,7 @@ class ChangePassword extends StatelessWidget {
   }
   _sumbit(BuildContext context) {
     return GestureDetector(
-      onTap: () => changePassController.submit(context),
+      onTap: () => changePassController.change_password(context,changePassController.new_pass.text,changePassController.confirm_pass.text),
       child: Container(
         color: Colors.white,
         width: MediaQuery.of(context).size.width * 0.93,

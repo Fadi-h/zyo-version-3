@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
+import 'package:zyo_version_1/controller/cart_controller.dart';
 import 'package:zyo_version_1/controller/home_controller.dart';
 import 'package:zyo_version_1/controller/new_coll_controller.dart';
 import 'package:zyo_version_1/view/cart.dart';
@@ -13,34 +15,52 @@ class NewCollection extends StatelessWidget {
 
   NewCollectionController newCollectionController = Get.put(NewCollectionController());
   HomeController homeController = Get.find();
+  CartController cartController = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: AppColors.main,
-          child: SingleChildScrollView(
-            child: Column(
+      body: WillPopScope(
+        onWillPop: homeController.onWillPop,
+        child: Obx((){
+          return SafeArea(
+            child: Stack(
               children: [
-                _new_collection(context),
-                _categories(context)
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: AppColors.main,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _new_collection(context),
+                        _products(context)
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(child: homeController.loading.value?Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.black.withOpacity(0.7),
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.white,),
+                  ),
+                ):Center())
               ],
             ),
-          ),
-        ),
+          );
+        }),
       )
     );
   }
 
   _new_collection(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
+      height: MediaQuery.of(context).size.height * 0.5,
       decoration: BoxDecoration(
         image: DecorationImage(
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
           image: AssetImage("assets/new_collection/Mask Group 3.png")
         )
       ),
@@ -74,18 +94,7 @@ class NewCollection extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            //todo something
-                          },
-                          child: SvgPicture.asset('assets/icons/noun_message.svg',width: 20,height: 20,
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(width: 10),
+
                     Column(
                       children: [
                         GestureDetector(
@@ -99,6 +108,18 @@ class NewCollection extends StatelessWidget {
 
                       ],
                     ),
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            //todo something
+                          },
+                          child: SvgPicture.asset('assets/icons/noun_message.svg',width: 20,height: 20,color: Colors.transparent,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(width: 10),
                   ],
                 )
               ],
@@ -117,6 +138,9 @@ class NewCollection extends StatelessWidget {
                             style: TextStyle(color: Colors.white),
                             controller: newCollectionController.search_controller,
                             cursorColor: Colors.grey,
+                            onSubmitted: (query){
+                              homeController.go_to_search_page_with_loading(query);
+                            },
                             textAlignVertical: TextAlignVertical.center,
                             decoration: InputDecoration(
                                 fillColor: Colors.white70.withOpacity(0.4),
@@ -157,7 +181,7 @@ class NewCollection extends StatelessWidget {
                         ),
                         Positioned(
                             top: 28,
-                            child: Container(
+                            child: cartController.my_order.length==0?Center():Container(
                               width: 12,
                               height: 12,
                               decoration: BoxDecoration(
@@ -165,7 +189,7 @@ class NewCollection extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10)
                               ),
                               child: Center(
-                                child: Text("10",
+                                child: Text(cartController.my_order.length.toString(),
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 7,
@@ -183,54 +207,6 @@ class NewCollection extends StatelessWidget {
         )
     );
   }
-  _categories(BuildContext context) {
-    return Container(
-      color: AppColors.main,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.1,
-            child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: newCollectionController.categories.length,
-                itemBuilder: (context, index) {
-                  return Obx(() => GestureDetector(
-                    onTap: () {
-                      newCollectionController.select_category.value = index;
-                    },
-                    child: Row(
-                      children: [
-                        Container(
-                          color: newCollectionController.select_category.value == index ?
-                          Colors.white : AppColors.main,
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Text(
-                                newCollectionController.categories[index].title.toString(),
-                                style: TextStyle(
-                                    color:  newCollectionController.select_category.value == index ?
-                                    AppColors.main : Colors.white,
-                                    fontSize: 18
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 15)
-                      ],
-                    ),
-                  ));
-                }),
-          ),
-          _products(context)
-        ],
-      ),
-    );
-  }
   _products(BuildContext context) {
     return  Padding(
       padding: const EdgeInsets.all(10),
@@ -244,63 +220,42 @@ class NewCollection extends StatelessWidget {
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10
             ),
-            itemCount: newCollectionController.products.length,
+            itemCount: homeController.homePage.new_products.length,
             itemBuilder: (BuildContext ctx, index) {
-              return Column(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: GestureDetector(
-                    onTap: () {
-                      Get.to(()=>ProductInfo(newCollectionController.products[index]));
-                    },
-                    child: Container(
-                      height: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                        image: DecorationImage(
-                            image: AssetImage(
-                                newCollectionController.products[index].image.toString()
-                            ),
-                            fit: BoxFit.cover
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Obx(()=> GestureDetector(
-                              onTap: () {
-                                newCollectionController.wishlist.value = !newCollectionController.wishlist.value;
-                              },
-                              child: !newCollectionController.wishlist.value
-                                  ? Icon(
-                                Icons.favorite_border,
-                                color: Colors.white,
-                                size: 25,
-                              )
-                                  : Icon(
-                                Icons.favorite_outlined,
-                                color: AppColors.main,
-                                size: 25,
+              return GestureDetector(
+                onTap: (){
+                  homeController.go_to_product_page(homeController.homePage.new_products[index].id);
+                },
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                  homeController.homePage.new_products[index].image.toString()
                               ),
-                            ))
+                              fit: BoxFit.cover
+                          ),
                         ),
-                      ),
-                    ),
-                  ),),
-                  Expanded(
-                    flex: 1,
-                    child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      newCollectionController.products[index].price.toString(),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15
+
                       ),),
-                  ))
-                ],
+                    Expanded(
+                      flex: 1,
+                      child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        (homeController.homePage.new_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+ App_Localization.of(context)!.translate(Global.currency_code),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15
+                        ),),
+                    ))
+                  ],
+                ),
               );
             }),
       ),

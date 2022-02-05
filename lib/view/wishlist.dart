@@ -2,30 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
+import 'package:zyo_version_1/controller/home_controller.dart';
 import 'package:zyo_version_1/controller/wishlist_controller.dart';
 
 class Wishlist extends StatelessWidget {
   Wishlist({Key? key}) : super(key: key);
 
 
-  WishlistController wishlistController = Get.put(WishlistController());
+  WishListController wishlistController = Get.find();
+  HomeController homeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            color: AppColors.main,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _header(context),
-                  _body(context)
-                ],
-              ),
-            ),
+        body: WillPopScope(
+          onWillPop: homeController.onWillPop,
+          child: SafeArea(
+            child:Obx((){
+              return  Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: AppColors.main,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _header(context),
+                      _body(context)
+                    ],
+                  ),
+                ),
+              );
+            }),
           ),
         )
     );
@@ -58,7 +66,7 @@ class Wishlist extends StatelessWidget {
                 mainAxisSpacing: 15,
                 crossAxisSpacing: 10
             ),
-            itemCount: wishlistController.wish_list.length,
+            itemCount: wishlistController.wishlist.length,
             itemBuilder: (BuildContext ctx, index) {
               return _list_wishlist(context,index);
             }),
@@ -76,8 +84,8 @@ class Wishlist extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(20)),
               image: DecorationImage(
-                  image: AssetImage(
-                      wishlistController.wish_list[index].image.toString()
+                  image: NetworkImage(
+                      wishlistController.wishlist[index].image.toString().replaceAll("localhost", "10.0.2.2")
                   ),
                   fit: BoxFit.cover
               ),
@@ -86,22 +94,18 @@ class Wishlist extends StatelessWidget {
               padding: const EdgeInsets.all(5),
               child: Align(
                   alignment: Alignment.bottomRight,
-                  child: Obx(()=> GestureDetector(
+                  child: GestureDetector(
                     onTap: () {
-                      wishlistController.wishlist.value = !wishlistController.wishlist.value;
+                      //wishlistController.wishlist.value = !wishlistController.wishlist.value;
+                      wishlistController.delete_from_wishlist(wishlistController.wishlist.value[index]);
                     },
-                    child: wishlistController.wishlist.value
-                        ? Icon(
-                      Icons.favorite_border,
+                    child: Icon(
+                      Icons.delete,
                       color: Colors.white,
                       size: 25,
                     )
-                        : Icon(
-                      Icons.favorite_outlined,
-                      color: AppColors.main,
-                      size: 25,
-                    ),
-                  ))
+
+                  )
               ),
             ),
           ),),
@@ -119,7 +123,8 @@ class Wishlist extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          wishlistController.wish_list[index].price.toString(),
+          (wishlistController.wishlist[index].price*Global.currency_covert).toStringAsFixed(2)
+          +" "+App_Localization.of(context)!.translate(Global.currency_code),
           style: TextStyle(
               color: Colors.white,
               fontSize: 18
@@ -133,7 +138,7 @@ class Wishlist extends StatelessWidget {
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          wishlistController.wish_list[index].title.toString(),
+          wishlistController.wishlist[index].title.toString(),
           maxLines: 2,
           style: TextStyle(
               color: Colors.white,

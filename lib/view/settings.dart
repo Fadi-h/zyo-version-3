@@ -2,11 +2,16 @@ import 'package:country_list_pick/country_list_pick.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zyo_version_1/const/Global.dart';
+import 'package:zyo_version_1/const/api.dart';
+import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/store.dart';
+import 'package:zyo_version_1/controller/home_controller.dart';
 import 'package:zyo_version_1/controller/settings_controller.dart';
 import 'package:zyo_version_1/view/introduction.dart';
+import 'package:zyo_version_1/view/no_internet.dart';
+import 'package:zyo_version_1/view/registation.dart';
 import 'package:zyo_version_1/view/settings/address_book.dart';
 import 'package:zyo_version_1/view/settings/change_pass.dart';
 import 'package:zyo_version_1/view/settings/connect_to_us.dart';
@@ -18,21 +23,24 @@ class Settings extends StatelessWidget {
   Settings({Key? key}) : super(key: key);
 
   Settings_controlller settings_controlller = Get.put(Settings_controlller());
-
+  HomeController homeController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: AppColors.main,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _header(context),
-                _body(context),
-              ],
+      body: WillPopScope(
+        onWillPop: homeController.onWillPop,
+        child: SafeArea(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            color: AppColors.main,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _header(context),
+                  _body(context),
+                ],
+              ),
             ),
           ),
         ),
@@ -66,7 +74,7 @@ class Settings extends StatelessWidget {
         SizedBox(height: 20,),
         _connectus_about(context),
         SizedBox(height: 20,),
-        _sign_out(context),
+        Global.customer==null?Center():_sign_out(context),
         SizedBox(height: 80),
         Center(
           child: Text(App_Localization.of(context)!.translate("version")+" 7.9.0",
@@ -79,10 +87,15 @@ class Settings extends StatelessWidget {
   _personal_info(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(()=>PersonalInfo());
+
+        if(Global.customer==null){
+          Get.to(()=>Registration());
+        }else{
+          Get.to(()=>PersonalInfo());
+        }
+
       },
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.1,
         color: AppColors.main3,
         width: MediaQuery.of(context).size.width,
         child: Padding(
@@ -119,7 +132,6 @@ class Settings extends StatelessWidget {
               },
               child: Container(
                 color: AppColors.main3,
-                height: MediaQuery.of(context).size.height * 0.1,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10,right: 10),
                   child: Row(
@@ -141,17 +153,21 @@ class Settings extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(
-              thickness: 1,
-              color: AppColors.main2,
-            ),
+            // Divider(
+            //   thickness: 1,
+            //   color: AppColors.main2,
+            // ),
+            SizedBox(height: 20,),
             GestureDetector(
               onTap: () {
-                Get.to(()=> ChangePassword());
+                if(Global.customer==null){
+                  Get.offAll(()=> Registration());
+                }else{
+                  Get.to(()=> ChangePassword());
+                }
               },
               child: Container(
                 color: AppColors.main3,
-                height: MediaQuery.of(context).size.height * 0.1,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10,right: 10),
                   child: Row(
@@ -173,38 +189,38 @@ class Settings extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(
-              thickness: 1,
-              color: AppColors.main2,
-            ),
-            GestureDetector(
-              onTap: () {
-                Get.to(()=> DeleteAccount());
-              },
-              child: Container(
-                color: AppColors.main3,
-                height: MediaQuery.of(context).size.height * 0.1,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10,right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(App_Localization.of(context)!.translate("delete_account"),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18
-                        ),),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: Icon(
-                          Icons.arrow_forward_ios,color: Colors.white,size: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            // Divider(
+            //   thickness: 1,
+            //   color: AppColors.main2,
+            // ),
+            // GestureDetector(
+            //   onTap: () {
+            //     Get.to(()=> DeleteAccount());
+            //   },
+            //   child: Container(
+            //     color: AppColors.main3,
+            //     height: MediaQuery.of(context).size.height * 0.1,
+            //     child: Padding(
+            //       padding: const EdgeInsets.only(left: 10,right: 10),
+            //       child: Row(
+            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //         children: [
+            //           Text(App_Localization.of(context)!.translate("delete_account"),
+            //             style: TextStyle(
+            //                 color: Colors.white,
+            //                 fontSize: 18
+            //             ),),
+            //           Padding(
+            //             padding: const EdgeInsets.only(right: 10),
+            //             child: Icon(
+            //               Icons.arrow_forward_ios,color: Colors.white,size: 20,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         )
     );
@@ -215,16 +231,17 @@ class Settings extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         child: Column(
           children: [
-            _country(context),
+            // _country(context),
+            // Divider(
+            //   thickness: 1,
+            //   color: AppColors.main2,
+            // ),
             Divider(
               thickness: 1,
               color: AppColors.main2,
             ),
             _lang(context),
-            Divider(
-              thickness: 1,
-              color: AppColors.main2,
-            ),
+            SizedBox(height: 20,),
             _currency(context)
           ],
         )
@@ -236,12 +253,16 @@ class Settings extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         child: Column(
           children: [
+            Divider(
+              thickness: 1,
+              color: AppColors.main2,
+            ),
+            SizedBox(height: 15,),
             GestureDetector(
               onTap: () {
                 Get.to(()=>ConnectToUs());
               },
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.1,
                 color: AppColors.main3,
                 child:  Padding(
                   padding: const EdgeInsets.only(left: 10,right: 10),
@@ -264,17 +285,13 @@ class Settings extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(
-              thickness: 1,
-              color: AppColors.main2,
-            ),
+            SizedBox(height: 20,),
             GestureDetector(
               onTap: () {
                 //todo something
               },
               child: Container(
                 color: AppColors.main3,
-                height: MediaQuery.of(context).size.height * 0.1,
                 child:  Padding(
                   padding: const EdgeInsets.only(left: 10,right: 10),
                   child: Row(
@@ -303,7 +320,8 @@ class Settings extends StatelessWidget {
   _sign_out(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.offAll(()=> Introduction());
+        Store.logout();
+        Get.offAll(()=> Registration());
       },
       child: Container(
         color: Colors.white,
@@ -413,7 +431,7 @@ class Settings extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 child: Text(App_Localization.of(context)!.translate("languages"),
                   style: TextStyle(
-                      color: AppColors.main2,
+                      color: Colors.white,
                       fontSize: 18
                   ),),
               ),
@@ -430,10 +448,10 @@ class Settings extends StatelessWidget {
                 MediaQuery.of(context).size.width - 50,
                 child: Text(
                     Global.language_code == "en" ?
-                    App_Localization.of(context)!.translate("english") :
-                    App_Localization.of(context)!.translate("arabic"),
+                    "English" :
+                    "العربية",
                     style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.grey,
                         fontSize: 16
                     )),
               ),
@@ -450,41 +468,115 @@ class Settings extends StatelessWidget {
     );
   }
   _currency(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        showCurrencyPicker(
-          context: context,
-          showFlag: true,
-          showCurrencyName: true,
-          showCurrencyCode: true,
-          onSelect: (Currency currency) {
-            print('Select currency: ${currency.name}');
-          },
-        );
-      },
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.1,
-        color: AppColors.main3,
-        child:  Padding(
-          padding: const EdgeInsets.only(left: 10,right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(App_Localization.of(context)!.translate("currency"),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18
-                ),),
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Icon(
-                  Icons.arrow_forward_ios,color: Colors.white,size: 20,
-                ),
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(App_Localization.of(context)!.translate("currency"),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18
+                  ),),
+               Obx((){
+                 return  Column(
+                   children: [
+                     settings_controlller.loading.value?Center():Center(),
+                     DropdownButton<String>(
+                       value: Global.currency_code,
+                       icon: const Icon(Icons.arrow_downward,color: Colors.transparent,),
+                       elevation: 16,
+                       dropdownColor: Colors.black.withOpacity(0.8),
+
+                       style: const TextStyle(color: Colors.grey),
+                       underline: Center(),
+
+                       onChanged: (String? newValue) {
+                         // setState(() {
+                         Api.check_internet().then((net) {
+                           if(net){
+                             Global.currency_code = newValue!;
+                             Store.save_currency(newValue);
+                             settings_controlller.loading.value=!settings_controlller.loading.value;
+                             if(newValue!="AED"){
+                               Api.get_dollar().then((value) {
+                                 Global.currency_covert=value;
+                               });
+                             }else{
+                               Global.currency_covert=1.0;
+                             }
+                           }else{
+                             Get.to(NoInternet());
+                           }
+                         });
+
+                         // });
+                       },
+                       items: <String>['AED', 'Dollar']
+                           .map<DropdownMenuItem<String>>((String value) {
+                         return DropdownMenuItem<String>(
+                           value: value,
+                           child: Text(value,),
+                         );
+                       }).toList(),
+                     ),
+                   ],
+                 );
+               }),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Icon(
+                Icons.arrow_forward_ios,color: Colors.white,size: 20,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+
+  //  GestureDetector(
+    //       onTap: () {
+    //         showCurrencyPicker(
+    //           context: context,
+    //
+    //           showFlag: true,
+    //           showCurrencyName: true,
+    //           showCurrencyCode: true,
+    //           onSelect: (Currency currency) {
+    //             print('Select currency: ${currency.name}');
+    //           },
+    //         );
+    //       },
+    //       child: Container(
+    //         height: MediaQuery.of(context).size.height * 0.1,
+    //         color: AppColors.main3,
+    //         child:  Padding(
+    //           padding: const EdgeInsets.only(left: 10,right: 10),
+    //           child: Row(
+    //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //             children: [
+    //               Text(App_Localization.of(context)!.translate("currency"),
+    //                 style: TextStyle(
+    //                     color: Colors.white,
+    //                     fontSize: 18
+    //                 ),),
+    //               Padding(
+    //                 padding: const EdgeInsets.only(right: 10),
+    //                 child: Icon(
+    //                   Icons.arrow_forward_ios,color: Colors.white,size: 20,
+    //                 ),
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     )
   }
 }

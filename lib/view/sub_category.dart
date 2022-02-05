@@ -2,15 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
+import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
+import 'package:zyo_version_1/controller/cart_controller.dart';
+import 'package:zyo_version_1/controller/home_controller.dart';
 import 'package:zyo_version_1/controller/sub_category_controller.dart';
+import 'package:zyo_version_1/controller/wishlist_controller.dart';
+import 'package:zyo_version_1/model/product.dart';
 import 'package:zyo_version_1/view/cart.dart';
 import 'package:zyo_version_1/view/product.dart';
 
-class SubCategory extends StatelessWidget {
-  SubCategory({Key? key}) : super(key: key);
+class SubCategoryView extends StatelessWidget {
+  String title;
+  RxList<Product> products;
+  SubCategoryView(this.title, this.products){
+    subCategoryController.products=this.products;
+  }
 
   SubCategoryController subCategoryController = Get.put(SubCategoryController());
-  SearchDemoSearchDelegate delegate = SearchDemoSearchDelegate();
+  CartController cartController = Get.find();
+  HomeController homeController = Get.find();
+  WishListController wishListController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +81,7 @@ class SubCategory extends StatelessWidget {
                         onTap: () {
                           Get.back();
                         },
-                        child: Text("Dresses",
+                        child: Text(title,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18
@@ -120,7 +132,7 @@ class SubCategory extends StatelessWidget {
                       ),
                       Positioned(
                           top: 25,
-                          child: Container(
+                          child: cartController.my_order.length==0?Center():Container(
                             width: 12,
                             height: 12,
                             decoration: BoxDecoration(
@@ -128,7 +140,7 @@ class SubCategory extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10)
                             ),
                             child: Center(
-                              child: Text("10",
+                              child: Text(cartController.my_order.length.toString(),
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 7,
@@ -179,14 +191,14 @@ class SubCategory extends StatelessWidget {
             flex: 7,
             child: GestureDetector(
               onTap: () {
-                Get.to(()=>ProductInfo(subCategoryController.products[index]));
+                homeController.go_to_product_page(subCategoryController.products[index].id);
               },
               child: Container(
                 height: 250,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   image: DecorationImage(
-                      image: AssetImage(subCategoryController.products[index].image.toString()),
+                      image: NetworkImage(subCategoryController.products[index].image.toString().replaceAll("localhost", "10.0.2.2")),
                       fit: BoxFit.cover
                   ),
                 ),
@@ -196,9 +208,17 @@ class SubCategory extends StatelessWidget {
                       alignment: Alignment.bottomRight,
                       child: Obx(() => GestureDetector(
                         onTap: () {
-                          subCategoryController.wishlist.value = !subCategoryController.wishlist.value;
+                          if(!subCategoryController.products[index].favorite.value){
+                            subCategoryController.products[index].likes.value++;
+                            wishListController.add_to_wishlist(subCategoryController.products[index], context);
+                            subCategoryController.products[index].favorite.value=true;
+                          }else{
+                            subCategoryController.products[index].likes.value--;
+                            wishListController.delete_from_wishlist(subCategoryController.products[index]);
+                            subCategoryController.products[index].favorite.value=false;
+                          }
                         },
-                        child: subCategoryController.wishlist.value
+                        child: !subCategoryController.products[index].favorite.value
                             ? Icon(
                           Icons.favorite_border,
                           color: Colors.white,
@@ -227,7 +247,7 @@ class SubCategory extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8),
       child: Align(
         alignment: Alignment.bottomLeft,
-        child: Text(subCategoryController.products[index].price.toString(),
+        child: Text((subCategoryController.products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
           style: TextStyle(
               color: Colors.white,
               fontSize: 18
@@ -252,20 +272,49 @@ class SubCategory extends StatelessWidget {
     );
   }
   _pressed_on_search(BuildContext context) async {
-    final int? selected = await showSearch<int>(
-      context: context,
-      delegate: delegate,
-    );
-    if (selected != null && selected != subCategoryController.Selected) {
-      subCategoryController.Selected = selected;
-    }
+    final result = await showSearch(
+        context: context,
+        delegate: SearchTextField(suggestion_list: Global.suggestion_list,homeController: homeController));
+    // homeController.get_products_by_search(result!, context);
+    homeController.go_to_search_page(result!);
+
   }
 }
 
-class SearchDemoSearchDelegate extends SearchDelegate<int> {
+class SearchTextField extends SearchDelegate<String> {
+  final List<String> suggestion_list;
+  String? result;
+  HomeController homeController;
 
-  final List<int> _data = List<int>.generate(100001, (int i) => i).reversed.toList();
-  final List<int> _history = <int>[42607, 85604, 66374, 44, 174];
+  SearchTextField(
+      {required this.suggestion_list, required this.homeController});
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      query.isEmpty
+          ? Visibility(
+        child: Text(''),
+        visible: false,
+      )
+          : IconButton(
+        icon: Icon(Icons.search, color: Colors.white,),
+        onPressed: () {
+          close(context, query);
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        Get.back();
+      },
+    );
+  }
 
 
   @override
@@ -273,15 +322,28 @@ class SearchDemoSearchDelegate extends SearchDelegate<int> {
     return super.appBarTheme(context).copyWith(
       appBarTheme: AppBarTheme(
         color: AppColors.main, //new AppBar color
+        elevation: 0,
       ),
-      textSelectionTheme: TextSelectionThemeData(
-        selectionHandleColor: Colors.red, // Change bubble to red
-        cursorColor: Colors.black,
-      ),
-
       hintColor: Colors.white,
       textTheme: TextTheme(
         headline6: TextStyle(
+            color: Colors.white
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final suggestions = suggestion_list.where((name) {
+      return name.toLowerCase().contains(query.toLowerCase());
+    });
+    // homeController.go_to_search_page(query);
+    // close(context, query);
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: CircularProgressIndicator(
           color: Colors.white,
         ),
       ),
@@ -290,89 +352,26 @@ class SearchDemoSearchDelegate extends SearchDelegate<int> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final Iterable<int> suggestions = query.isEmpty
-        ? _history
-        : _data.where((int i) => '$i'.startsWith(query));
-
+    final suggestions = suggestion_list.where((name) {
+      return name.toLowerCase().contains(query.toLowerCase());
+    });
     return Container(
       color: AppColors.main,
-      child: _SuggestionList(
-        query: query,
-        suggestions: suggestions.map<String>((int i) => '$i').toList(),
-        onSelected: (String suggestion) {
-          query = suggestion;
-          showResults(context);
+      child: ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(
+              suggestions.elementAt(index),
+              style: TextStyle(color: AppColors.main2),
+            ),
+            onTap: () {
+              query = suggestions.elementAt(index);
+              close(context, query);
+            },
+          );
         },
       ),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final int? searched = int.tryParse(query);
-    if (searched == null || !_data.contains(searched)) {
-      return Container(
-        color: AppColors.main,
-        child: Center(
-          child: Text(
-            '" $query "\n is not exists',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      color: AppColors.main,
-      child: Center(
-        //when i click on suggestion
-      ),
-    );
-  }
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return <Widget>[
-      Container(
-        color:AppColors.main,
-        child: IconButton(
-          icon: const Icon(Icons.clear,color: Colors.white,),
-          onPressed: () {
-            query = '';
-            showSuggestions(context);
-          },
-        ),
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-   return null;
-  }
-}
-class _SuggestionList extends StatelessWidget {
-  const _SuggestionList({required this.suggestions, required this.query, required this.onSelected});
-
-  final List<String> suggestions;
-  final String query;
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (BuildContext context, int i) {
-        final String suggestion = suggestions[i];
-        return ListTile(
-          title: Text(suggestion.substring(query.length),
-            style: TextStyle(color: Colors.white),),
-          onTap: () {
-            onSelected(suggestion);
-          },
-        );
-      },
     );
   }
 }

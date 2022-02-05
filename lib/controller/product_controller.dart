@@ -6,7 +6,7 @@ class ProductController extends GetxController {
 
   CarouselController controller = CarouselController();
   var activeIndex = 0.obs;
-  var wishlist = false.obs;
+  var loading = false.obs;
   var ratingValue = 0.0.obs;
   GlobalKey<ScaffoldState> key =  GlobalKey<ScaffoldState>();
   var selected = 0.obs;
@@ -14,6 +14,8 @@ class ProductController extends GetxController {
   var select_size = 0.obs;
   var checked = true.obs;
   var ratingValue2 = 0.0.obs;
+  var selected_sub_product = 0.obs;
+  TextEditingController review_controller = TextEditingController();
 
   List<Color> colors = [
     Colors.blueGrey, Colors.red, Colors.blue, Colors.brown,].obs as List<Color>;

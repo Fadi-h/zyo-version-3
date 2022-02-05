@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zyo_version_1/const/Global.dart';
+import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
 import 'package:zyo_version_1/view/introduction.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:zyo_version_1/view/no_internet.dart';
 
 void main() {
   runApp(MyApp());
@@ -72,7 +73,7 @@ class _MyAppState extends State<MyApp> {
         }
         return supportedLocales.first;
       },
-      home: Introduction(),
+      home: Introduction()
     );
   }
 }

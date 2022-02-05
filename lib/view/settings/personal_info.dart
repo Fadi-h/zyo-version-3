@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/controller/settings/personal_info_controller.dart';
 import 'package:zyo_version_1/view/registation.dart';
 
@@ -126,7 +127,7 @@ class PersonalInfo extends StatelessWidget {
             padding: const EdgeInsets.only(top: 3),
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              child: Text("Maya",
+              child: Text(Global.customer!.firstname,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16
@@ -160,7 +161,7 @@ class PersonalInfo extends StatelessWidget {
             padding: const EdgeInsets.only(top: 3),
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              child: Text("Skef",
+              child: Text(Global.customer!.lastname,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16
@@ -194,7 +195,7 @@ class PersonalInfo extends StatelessWidget {
             padding: const EdgeInsets.only(top: 3),
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              child: Text("maya@gmail.com",
+              child: Text(Global.customer!.email,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16

@@ -41,21 +41,8 @@ class Introduction extends StatelessWidget {
       onTap: () {
         Get.off(()=>Registration());
       },
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.4,
-        height: MediaQuery.of(context).size.height * 0.07,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(25))
-        ),
-        child: Center(
-          child: Text(
-            App_Localization.of(context)!.translate("start"),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold
-          ),),
-        ),
+      child:Center(
+        child: CircularProgressIndicator(color: Colors.white,),
       ),
     );
   }

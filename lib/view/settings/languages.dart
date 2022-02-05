@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zyo_version_1/const/Global.dart';
+import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
 import 'package:zyo_version_1/controller/settings/languages_controller.dart';

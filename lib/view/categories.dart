@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
+import 'package:zyo_version_1/controller/cart_controller.dart';
 import 'package:zyo_version_1/controller/categories_controller.dart';
 import 'package:zyo_version_1/controller/home_controller.dart';
 import 'package:zyo_version_1/view/cart.dart';
@@ -14,23 +16,41 @@ class Categories extends StatelessWidget {
 
   CategoriesController categoriesController = Get.put(CategoriesController());
   HomeController homeController = Get.find();
+  CartController cartController = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: AppColors.main,
-          child: SingleChildScrollView(
-            child: Column(
+      body: WillPopScope(
+        onWillPop: homeController.onWillPop,
+        child: SafeArea(
+          child:Obx((){
+            return  Stack(
               children: [
-                _header(context),
-                _body(context)
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: AppColors.main,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _header(context),
+                        _body(context)
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(child: homeController.loading.value?Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.black.withOpacity(0.7),
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.white,),
+                  ),
+                ):Center())
               ],
-            ),
-          ),
+            );
+          }),
         ),
       )
     );
@@ -48,18 +68,7 @@ class Categories extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          //todo something
-                        },
-                        child: SvgPicture.asset('assets/icons/noun_message.svg',width: 20,height: 20,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(width: 10),
+
                   Column(
                     children: [
                       GestureDetector(
@@ -73,6 +82,18 @@ class Categories extends StatelessWidget {
 
                     ],
                   ),
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          //todo something
+                        },
+                        child: SvgPicture.asset('assets/icons/noun_message.svg',width: 20,height: 20,color: Colors.transparent,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(width: 10),
                 ],
               )
             ],
@@ -90,6 +111,9 @@ class Categories extends StatelessWidget {
                         child: TextField(
                           controller: categoriesController.search_controller,
                           cursorColor: Colors.grey,
+                          onSubmitted: (query){
+                            homeController.go_to_search_page_with_loading(query);
+                          },
                           textAlignVertical: TextAlignVertical.center,
                           decoration: InputDecoration(
                             fillColor: Colors.white,
@@ -130,7 +154,7 @@ class Categories extends StatelessWidget {
                       ),
                       Positioned(
                           top: 28,
-                          child: Container(
+                          child: cartController.my_order.length==0?Center():Container(
                             width: 12,
                             height: 12,
                             decoration: BoxDecoration(
@@ -138,7 +162,7 @@ class Categories extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10)
                             ),
                             child: Center(
-                              child: Text("10",
+                              child: Text(cartController.my_order.length.toString(),
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 7,
@@ -184,20 +208,22 @@ class Categories extends StatelessWidget {
             child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: categoriesController.categories.length,
+                itemCount: homeController.homePage.category.length,
                 itemBuilder: (context, index) {
-                  return Obx(() => GestureDetector(
+                  return GestureDetector(
                     onTap: () {
                       categoriesController.select_category.value = index;
+                      categoriesController.select_sub_category.value = 0;
+                      homeController.get_sub_category_and_product(index);
+
                     },
                     child: Row(
                       children: [
                         SizedBox(width: 10),
                         Text(
-                          categoriesController.categories[index].title.toString(),
+                          homeController.homePage.category[index].title.toString(),
                           style: TextStyle(
-                              decoration: categoriesController.select_category.value == index  ?
-                              TextDecoration.underline : TextDecoration.none,
+
                               color:  categoriesController.select_category.value == index ?
                               Colors.white : AppColors.main2,
                               fontSize: 16
@@ -206,7 +232,7 @@ class Categories extends StatelessWidget {
                         SizedBox(width: 10,)
                       ],
                     ),
-                  ));
+                  );
                 }),
           ),
           Divider(
@@ -224,7 +250,7 @@ class Categories extends StatelessWidget {
         child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: ListView.builder(
-              itemCount: categoriesController.sub_categories.length,
+              itemCount: homeController.subCategory.length,
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (context, index) {
@@ -242,18 +268,19 @@ class Categories extends StatelessWidget {
     return Obx(()=> GestureDetector(
       onTap: () {
         categoriesController.select_sub_category.value = index;
+        homeController.get_product_by_sub_category(index);
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.38,
         height: 50,
-        color: categoriesController.select_sub_category == index ?
+        color: categoriesController.select_sub_category.value == index ?
         Colors.white :
         AppColors.main3,
         child: Center(
           child: Text(
-            categoriesController.sub_categories[index].title.toString(),
+            homeController.subCategory.value[index].title.toString(),
             style:  TextStyle(
-                color: categoriesController.select_sub_category == index ? AppColors.main3 : Colors.white,
+                color: categoriesController.select_sub_category.value == index ? AppColors.main3 : Colors.white,
                 fontSize: 11,
             ),
           ),
@@ -284,31 +311,66 @@ class Categories extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 4/6,
+                      crossAxisCount: 2,
+                      childAspectRatio: 4/7,
                       mainAxisSpacing: 10,
                       crossAxisSpacing: 10
                   ),
-                  itemCount: categoriesController.products.length,
+                  itemCount: homeController.products.length,
                   itemBuilder: (BuildContext ctx, index) {
-                    return Column(
-                      children: [
-                       Expanded(
-                         flex: 3,
-                         child: _products(context,index),),
-                        Expanded(
-                          flex: 1,
-                          child: Center(
-                          child: Container(
-                            child: Text(
-                              "jakets",
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11),
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        // border: Border.all(color: Colors.white),
+                      ),
+                      child: Column(
+                        children: [
+                         Expanded(
+                           flex: 3,
+                           child: _products(context,index),),
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                color: Colors.black
+                              ),
+                              padding: EdgeInsets.only(top: 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(25),
+                                        // color: Colors.black
+                                      ),
+                                      child: Text(
+                                        (homeController.products.value[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      homeController.products.value[index].title,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11,),
+                                      maxLines: 2,
+                                    ),),
+                                ],
+                              ),
                             ),
-                          ),
-                        ),)
-                      ],
+                          ),),
+                        ],
+                      ),
                     );
                   }),
               SizedBox(height: 20,)
@@ -321,14 +383,15 @@ class Categories extends StatelessWidget {
   _products(BuildContext context , int index) {
     return GestureDetector(
       onTap: () {
-       Get.to(()=>ProductInfo(categoriesController.products[index]));
+       //Get.to(()=>ProductInfo(homeController.products[index]));
+        homeController.go_to_product_page(homeController.products.value[index].id);
       },
       child:  Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
+          borderRadius: BorderRadius.circular(15),
           image: DecorationImage(
             fit: BoxFit.fill,
-            image: AssetImage(categoriesController.products[index].image.toString()),
+            image: NetworkImage(homeController.products[index].image.toString().replaceAll("localhost", "10.0.2.2")),
           ),
         ),
       ),

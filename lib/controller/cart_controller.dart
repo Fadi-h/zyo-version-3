@@ -1,135 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zyo_version_1/const/api.dart';
+import 'package:zyo_version_1/const/app.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
+import 'package:zyo_version_1/const/store.dart';
+import 'package:zyo_version_1/model/my_order.dart';
+import 'package:zyo_version_1/model/product.dart';
 import 'package:zyo_version_1/view/checkout.dart';
+import 'package:zyo_version_1/view/no_internet.dart';
 
-class CartController extends GetxController {
-
-  var count = 1.obs;
+class CartController extends GetxController{
+  // Rx<Order> order=Order(lineItems: <OrderLineItem>[]).obs;
+  Rx<String> total="0.00".obs,sub_total="0.00".obs,shipping="10.00".obs,coupon="0.0".obs;
+  var my_order = <MyOrder>[].obs;
+  var rate = <MyOrder>[].obs;
+  var loading = false.obs;
   TextEditingController code = TextEditingController();
-  var validate = false.obs;
 
-  increase() {
-    count.value ++;
+
+  Apply_code(BuildContext context,String code){
+    Api.check_internet().then((net) {
+      if(net){
+        loading.value=true;
+        Api.Apply_dis_code(code).then((value) {
+          loading.value=false;
+          get_total();
+          if(value==0){
+            App.error_msg(context, "error_code");
+          }else{
+            App.sucss_msg(context, "succ_code");
+          }
+        });
+      }else{
+        Get.to(NoInternet())!.then((value) {
+          Apply_code(context,code);
+        });
+      }
+    });
+
   }
 
-  decrease() {
-    if(count.value > 1) {
-      count.value --;
+  add_to_cart(Product product , int count){
+    if(product.availability>0){
+      for(int i=0;i<my_order.length;i++){
+        if(my_order[i].product.value.id==product.id&&my_order[i].product.value.cart_details==product.cart_details){
+          my_order[i].quantity.value = my_order[i].quantity.value + count;
+          double x = (my_order[i].quantity.value * double.parse(product.price.toString())) as double;
+          my_order[i].price.value = x.toString();
+          get_total();
+          return ;
+        }
+      }
+      double x = (count * double.parse(product.price.toString())) as double;
+      Product new_product = Product(bodtHtml: product.bodtHtml, id: product.id, subCategoryId: product.subCategoryId, title: product.title, subTitle: product.subTitle, description: product.description, image: product.image, search: product.search, availability: product.availability, price: product.price, ratingCount: product.ratingCount, rate: product.rate, commingSoon: product.commingSoon, likes: product.likes);
+      new_product.cart_details=product.cart_details;
+      MyOrder myOrder = MyOrder(product:new_product.obs,quantity:count.obs,price:x.toString().obs);
+      my_order.add(myOrder);
+      get_total();
     }
-    else {
-      //delete from cart
-    }
+
   }
 
-  btm_sheet_checkout(BuildContext context) {
-    return showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.75,
-          color: AppColors.main,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 10,),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: GestureDetector(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                          child: Icon(Icons.close,color: Colors.white,)))
-                ),
-                SizedBox(height: 10,),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.95,
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 4,
-                      itemBuilder: (context, index) {
-                        return Row(
-                          children: [
-                            SizedBox(width: 10),
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.42,
-                              height: MediaQuery.of(context).size.height * 0.32,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  color: Colors.white,
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage("assets/home/flash_sale/1.png")
-                                  )
-                              ),
-                            )
-                          ],
-                        );
-                      }),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Row(
-                    children: [
-                      Text(App_Localization.of(context)!.translate("totals")+" ",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20
-                      ),),
-                      Text("\$300.00",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18
-                        ),),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 50),
-                GestureDetector(
-                  onTap: () {
-                    Get.to(()=>Checkout());
-                  },
-                  child: Container(
-                    color: Colors.white,
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: 50,
-                    child: Center(
-                      child: Text(App_Localization.of(context)!.translate("checkout"),
-                        style: TextStyle(
-                            color: AppColors.main,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-  checkout(BuildContext context) {
-    if(code.text.isEmpty) {
-      validate.value = true;
+  add_to_rate(Product product , int count){
+    for(int i=0;i<rate.length;i++){
+      if(rate[i].product.value.id==product.id){
+        rate[i].quantity.value = rate[i].quantity.value + count;
+        // double x = (my_order[i].quantity.value * double.parse(product.price.toString())) as double;
+        rate[i].price.value = "0.0";
+        get_total();
+        return ;
+      }
     }
-    else {
-      validate.value = false;
-      btm_sheet_checkout(context);
-    }
+    // double x = (count * double.parse(product.price.toString())) as double;
+    MyOrder myOrder = MyOrder(product:product.obs,quantity:count.obs,price:"0.0".obs);
+    rate.add(myOrder);
   }
 
-  List<Color> colors = [
-    Colors.blueGrey, Colors.red, Colors.blue, Colors.yellow].obs as List<Color>;
+  clear_cart(){
+    my_order.clear();
+    get_total();
+  }
 
+  increase(MyOrder myOrder,index){
+    // if(myOrder.product.value.availability>my_order[index].quantity.value){
+      my_order[index].quantity.value++;
+      double x =  (my_order[index].quantity.value * double.parse(my_order[index].product.value.price.toString())) as double;
+      my_order[index].price.value=x.toString();
+      get_total();
+    // }
+
+  }
+
+  decrease(MyOrder myOrder,index){
+    if(my_order[index].quantity.value>1){
+      my_order[index].quantity.value--;
+      double x =  (my_order[index].quantity.value *double.parse(my_order[index].product.value.price.toString())) as double;
+      my_order[index].price.value=x.toString();
+      get_total();
+    }else{
+      remove_from_cart(myOrder);
+    }
+
+  }
+  remove_from_cart(MyOrder myOrder){
+    my_order.removeAt(my_order.indexOf(myOrder));
+    get_total();
+  }
+
+  get_total(){
+    double x=0,y=0;
+    for (var elm in my_order) {
+      x += double.parse(elm.price.value);
+      // y += double.parse(elm.shipping.value);
+    }
+    y = (x*(Global.dis_code))/100;
+    coupon.value=y.toString();
+    sub_total.value=x.toString();
+    total.value = (x+double.parse(shipping.value.toString())-double.parse(coupon.value.toString())).toString();
+    Store.save_order(my_order.value);
+  }
 }
-

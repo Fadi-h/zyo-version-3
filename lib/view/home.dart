@@ -1,10 +1,16 @@
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
+import 'package:zyo_version_1/controller/cart_controller.dart';
 import 'package:zyo_version_1/controller/home_controller.dart';
+import 'package:zyo_version_1/model/sub_categories.dart';
 import 'package:zyo_version_1/view/cart.dart';
 import 'package:zyo_version_1/view/categories.dart';
 import 'package:zyo_version_1/view/new_collection.dart';
@@ -17,7 +23,7 @@ class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
 
   HomeController homeController = Get.put(HomeController());
-  SearchDemoSearchDelegate delegate = SearchDemoSearchDelegate();
+  CartController cartController = Get.find();
   String _url = 'https://flutter.dev';
 
   @override
@@ -46,7 +52,8 @@ class Home extends StatelessWidget {
         unselectedItemColor: Colors.black87,
         currentIndex: homeController.select_nav_bar.value,
         onTap: (index) {
-          homeController.set_nav_bar(index);
+          homeController.last_select_nav_bar.value=homeController.select_nav_bar.value;
+            homeController.set_nav_bar(index);
         },
         items: [
           BottomNavigationBarItem(
@@ -122,123 +129,245 @@ class Home extends StatelessWidget {
     ),
     );
   }
+
   _home(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: AppColors.main,
-        child: SingleChildScrollView(
-          child: Column(
+    return WillPopScope(
+      onWillPop: homeController.onWillPop,
+      child: SafeArea(
+        child: Obx((){
+          return Stack(
             children: [
-              _header(context),
-              _body(context)
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: AppColors.main,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _header(context),
+                      _body(context)
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(child:  _header(context),),
+              Positioned(child: homeController.loading.value?Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: Colors.black.withOpacity(0.7),
+                child: Center(
+                  child: CircularProgressIndicator(color: Colors.white,),
+                ),
+              ):Center())
             ],
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
   _header(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.93,
+      width: MediaQuery.of(context).size.width ,
       height: MediaQuery.of(context).size.height * 0.12,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          //todo something
-                        },
-                        child: SvgPicture.asset('assets/icons/noun_message.svg',width: 20,height: 20,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(width: 15),
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          homeController.select_nav_bar.value =3;
-                        },
-                        child: SvgPicture.asset('assets/icons/noun_Heart.svg',
-                          width: 20,height: 20, color: Colors.white,
-                        ),
-                      )
+      color: Colors.black,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    // Column(
+                    //   children: [
+                    //     GestureDetector(
+                    //       onTap: () {
+                    //         //todo something
+                    //       },
+                    //       child: SvgPicture.asset('assets/icons/noun_message.svg',width: 20,height: 20,
+                    //       ),
+                    //     )
+                    //   ],
+                    // ),
+                    // SizedBox(width: 15),
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            homeController.select_nav_bar.value =3;
+                          },
+                          child: SvgPicture.asset('assets/icons/noun_Heart.svg',
+                            width: 20,height: 20, color: Colors.white,
+                          ),
+                        )
 
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.1,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/logo/logo2.png"),
-                )),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            //todo something
+                          },
+                          child: SvgPicture.asset('assets/icons/noun_message.svg',width: 20,height: 20,color: Colors.transparent,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(width: 15),
+                  ],
+                ),
+              ],
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
-                      icon: const Icon(Icons.search,
-                          color: Colors.white),
-                      onPressed: () => _pressed_on_search(context)
-                  ),
-                  Stack(
-                   children: [
-                     Column(
-                       children: [
-                         GestureDetector(
-                           onTap: () {
-                             Get.to(()=>Cart());
-                           },
-                           child: Container(
-                             height: 50,
-                             width: 20,
-                               child: Icon(Icons.shopping_bag_outlined,color: Colors.white,)),
-                         ),
-                       ],
-                     ),
-                     Positioned(
-                       top: 28,
-                          child: Container(
-                            width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10)
-                        ),
-                        child: Center(
-                          child: Text("10",
-                           style: TextStyle(
-                             color: Colors.white,
-                             fontSize: 7,
-                             fontWeight: FontWeight.bold
-                           ),),
-                        ),
-                      ))
-                    ],
-                 )
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    height: MediaQuery.of(context).size.height * 0.05,
+                    child:  SvgPicture.asset("assets/logo/logo.svg",),
+                  )
+
                 ],
               ),
-            ],
-          ),
-        ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                        icon: const Icon(Icons.search,
+                            color: Colors.white),
+                        onPressed: () => _pressed_on_search(context)
+                    ),
+                    Stack(
+                     children: [
+                       Column(
+                         children: [
+                           GestureDetector(
+                             onTap: () {
+                               Get.to(()=>Cart());
+                             },
+                             child: Container(
+                               height: 50,
+                               width: 20,
+                                 child: Icon(Icons.shopping_bag_outlined,color: Colors.white,)),
+                           ),
+                         ],
+                       ),
+                       Positioned(
+                         top: 28,
+                            child: cartController.my_order.length==0?Center():Container(
+                              width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: Center(
+                            child: Text(cartController.my_order.length.toString(),
+                             style: TextStyle(
+                               color: Colors.white,
+                               fontSize: 7,
+                               fontWeight: FontWeight.bold
+                             ),),
+                          ),
+                        ))
+                      ],
+                   )
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
+    );
+  }
+  _slider(BuildContext context){
+    return Stack(
+      children: [
+        CarouselSlider(
+          items: homeController.homePage.slider.map((e){
+            return GestureDetector(
+              onTap: (){
+                homeController.go_to_product_page(e.productId);
+              },
+              child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height:
+                  MediaQuery.of(context).size.width * 0.3,
+                  decoration: BoxDecoration(
+                    // borderRadius: BorderRadius.circular(10),
+                    // image: DecorationImage(
+                    //     image: CachedNetworkImageProvider(e.image),
+                    //     fit: BoxFit.cover)
+                  ),
+                  child: CachedNetworkImage(
+                    // placeholder: (context, url) => const CircularProgressIndicator(),
+                    imageUrl: e.image.replaceAll("localhost", "10.0.2.2"),
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ),
+                  )
+              ),
+            );
+          }).toList(),
+          options: CarouselOptions(
+            autoPlay: true,
+            enlargeCenterPage: true,
+            viewportFraction: 1,
+            aspectRatio: 2.0,
+            initialPage: 0,
+            onPageChanged: (index, reason) {
+              homeController.slider_value.value=index;
+            },
+          ),
+        ),
+        /**3 point*/
+        Positioned(
+          bottom: 0,
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:homeController.homePage.slider.map((e) {
+                      return  Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: homeController.slider_value.value == homeController.homePage.slider.indexOf(e)
+                                ? Colors.white
+                                : Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
   _body(BuildContext context) {
@@ -247,12 +376,7 @@ class Home extends StatelessWidget {
         Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.3,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/home/home1.png"),
-                  fit: BoxFit.cover
-              )
-          ),
+          child: _slider(context),
         ),
         Column(
           children: [
@@ -262,32 +386,27 @@ class Home extends StatelessWidget {
               child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemCount: homeController.categories.length,
+                  itemCount: homeController.homePage.category.length,
                   itemBuilder: (context, index) {
                     return _categories(index);
                   }),
             ),
-            Slider(
-              value: double.parse(homeController.slider_value.value.toString()),
-              onChanged: (value) {
-                homeController.slider_value.value = double.parse(value.round().toString());
-              },
-              min: 0,
-              max: (double.parse(homeController.categories.length.toString())-1)+0.5,
-              activeColor: Colors.white,
-              inactiveColor: AppColors.main2,
-            ),
+            // Slider(
+            //   value: double.parse(homeController.sub_category_value.value.toString()),
+            //   onChanged: (value) {
+            //     // homeController.slider_value.value = double.parse(value.round().toString());
+            //   },
+            //   min: 0,
+            //   max: (double.parse(homeController.categories.length.toString())-1)+0.5,
+            //   activeColor: Colors.white,
+            //   inactiveColor: AppColors.main2,
+            // ),
           ],
         ),
         Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.08,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/home/home2.png"),
-                  fit: BoxFit.cover
-              )
-          ),
+          height: 50,
+          child: SvgPicture.asset("assets/home/shop_by_cat.svg",width: 50,color: Colors.white,),
         ),
         Column(
           children: [
@@ -295,91 +414,87 @@ class Home extends StatelessWidget {
             _slider_categories(context),
             SizedBox(height: 10),
             Container(
-                width: MediaQuery.of(context).size.width * 0.2,
                 alignment: Alignment.topCenter,
-                child: LinearProgressIndicator(
-                  value: (double.parse(homeController.activeIndex.value.toString())/3),
-                  color: Colors.white,
-                  backgroundColor: AppColors.main2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: homeController.forthSubCategory.map((e) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 2,right: 2),
+                      child: Container(
+                        width: 10,
+                        height: 2,
+                        color: homeController.selectedFourthSubCategory.value==homeController.forthSubCategory.indexOf(e)?Colors.white:Colors.grey,
+                      ),
+                    );
+                  }).toList(),
                 )
             ),
             SizedBox(height: 10),
-            Center(
-              child: Text(
-                App_Localization.of(context)!.translate("deal_of_the_day"),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18
-                ),
-              ),
-            ),
-            SizedBox(height: 10,)
           ],
         ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.25,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/home/home3.png"),
-                  fit: BoxFit.cover
-              )
-          ),
-          child:  Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Text("CYPER MONDAY",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25
-                        )
-                    ),
-                  ),
-                  Container(
-                    child: Text("Shopping Guide",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15
-                        )
-                    ),
-                  ),
-                  Container(
-                    child: Text("Games, prizes, and more you don't wanto miss!",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10
-                        )
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  GestureDetector(
-                    onTap: () {
-                      //todo something
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      height: MediaQuery.of(context).size.height * 0.04,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(50))
-                      ),
-                      child: Center(
-                        child: Text(App_Localization.of(context)!.translate("view_more")),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
+        // Container(
+        //   width: MediaQuery.of(context).size.width,
+        //   height: MediaQuery.of(context).size.height * 0.25,
+        //   decoration: BoxDecoration(
+        //       image: DecorationImage(
+        //           image: AssetImage("assets/home/home3.png"),
+        //           fit: BoxFit.cover
+        //       )
+        //   ),
+        //   child:  Padding(
+        //     padding: const EdgeInsets.only(right: 10),
+        //     child: Align(
+        //       alignment: Alignment.centerRight,
+        //       child: Column(
+        //         mainAxisAlignment: MainAxisAlignment.center,
+        //         children: [
+        //           Container(
+        //             child: Text("CYPER MONDAY",
+        //                 style: TextStyle(
+        //                     color: Colors.white,
+        //                     fontWeight: FontWeight.bold,
+        //                     fontSize: 25
+        //                 )
+        //             ),
+        //           ),
+        //           Container(
+        //             child: Text("Shopping Guide",
+        //                 style: TextStyle(
+        //                     color: Colors.white,
+        //                     fontSize: 15
+        //                 )
+        //             ),
+        //           ),
+        //           Container(
+        //             child: Text("Games, prizes, and more you don't wanto miss!",
+        //                 style: TextStyle(
+        //                     color: Colors.white,
+        //                     fontSize: 10
+        //                 )
+        //             ),
+        //           ),
+        //           SizedBox(height: 10,),
+        //           GestureDetector(
+        //             onTap: () {
+        //               //todo something
+        //             },
+        //             child: Container(
+        //               width: MediaQuery.of(context).size.width * 0.3,
+        //               height: MediaQuery.of(context).size.height * 0.04,
+        //               decoration: BoxDecoration(
+        //                   color: Colors.white,
+        //                   borderRadius: BorderRadius.all(Radius.circular(50))
+        //               ),
+        //               child: Center(
+        //                 child: Text(App_Localization.of(context)!.translate("view_more")),
+        //               ),
+        //             ),
+        //           )
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Column(
           children: [
             Container(
@@ -398,12 +513,12 @@ class Home extends StatelessWidget {
               )
             ),
             Container(
-              width: MediaQuery.of(context).size.width * 0.93,
+              width: MediaQuery.of(context).size.width * 0.90,
               height: MediaQuery.of(context).size.height * 0.23,
               child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  itemCount: homeController.flash_sales_image.length,
+                  itemCount: homeController.homePage.flashSale.length,
                   itemBuilder: (context, index) {
                     return Row(
                       children: [
@@ -418,43 +533,56 @@ class Home extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 15),
+        SizedBox(height: 20),
+        Row(
+          children: [
+            SizedBox(width: MediaQuery.of(context).size.width*0.035,),
+            Text(App_Localization.of(context)!.translate("comming_soon"),style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+          ],
+        ),
+        SizedBox(height: 10),
         Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.3,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/home/home4.png"),
-                  fit: BoxFit.cover
-              )
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("COMMING SOON",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20
-                ),),
-              SizedBox(height: 10,),
-              GestureDetector(
-                onTap: () {
-                  //todo something
-                },
+          
+          child: GridView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+              itemCount: homeController.homePage.comingSoon.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 0,
+            crossAxisSpacing: 0,
+            childAspectRatio: 7/9
+          ), itemBuilder: (context,index){
+            return GestureDetector(
+              onTap: (){
+                homeController.go_to_product_page(homeController.homePage.comingSoon[index].id);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  height: MediaQuery.of(context).size.height * 0.04,
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
+                      color: Colors.black,
+                    borderRadius: BorderRadius.circular(15),
+                    image: DecorationImage(
+                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.4), BlendMode.dstATop),
+                      fit: BoxFit.fill,
+                      image: NetworkImage(homeController.homePage.comingSoon[index].image),
+                    )
                   ),
-                  child: Center(
-                    child: Text(App_Localization.of(context)!.translate("pre_order")),
-                  ),
+
+
                 ),
-              )
-            ],
-          ),
+              ),
+            );
+          }),
+        ),
+        SizedBox(height: 20),
+        Row(
+          children: [
+            SizedBox(width: MediaQuery.of(context).size.width*0.035,),
+            Text(App_Localization.of(context)!.translate("our_products"),style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+          ],
         ),
         _products(context),
       ],
@@ -463,18 +591,21 @@ class Home extends StatelessWidget {
   _categories(int index) {
     return GestureDetector(
       onTap: () {
-        homeController.slider_value.value = double.parse(index.toString());
+        homeController.select_category.value = index;
+        homeController.get_sub_category(index);
       },
       child: Row(
         children: [
           SizedBox(width: 20),
-          Text(
-            homeController.categories[index].title.toString(),
-            style: TextStyle(
-                color: homeController.slider_value.value == double.parse(index.toString()) ?
-                Colors.white : AppColors.main2
-            ),
-          ),
+          Obx((){
+            return Text(
+              homeController.homePage.category[index].title.toString(),
+              style: TextStyle(
+                  color: homeController.select_category.value == index ?
+                  Colors.white : AppColors.main2
+              ),
+            );
+          }),
           SizedBox(width:18)
         ],
       ),
@@ -495,16 +626,16 @@ class Home extends StatelessWidget {
           homeController.set_index(index);
         },
       ),
-      items: homeController.sub_categories.map((c){
+      items: homeController.forthSubCategory.map((c){
         return Builder(
             builder:(BuildContext context){
               return Container(
                   child: Row(
                     children: [
-                      _sub_categories(context, 0),
-                      _sub_categories(context, 1),
-                      _sub_categories(context, 2),
-                      _sub_categories(context, 3)
+                      _sub_categories(context,c.first!),
+                      c.second==null?Center():_sub_categories(context,  c.second!),
+                      c.third==null?Center(): _sub_categories(context, c.third!),
+                      c.fourth==null?Center():_sub_categories(context,  c.fourth!)
                     ],
                   )
               );
@@ -513,7 +644,7 @@ class Home extends StatelessWidget {
       }).toList(),
     );
   }
-  _sub_categories(BuildContext context, int index) {
+  _sub_categories(BuildContext context, SubCategory subCategory) {
     return  SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -524,7 +655,7 @@ class Home extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Get.to(()=>SubCategory());
+                    homeController.go_to_sub_category_page(subCategory);
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.2,
@@ -534,23 +665,28 @@ class Home extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: Colors.white,
                         image: DecorationImage(
-                            image: AssetImage(
-                              homeController.sub_categories[index].image.toString())
+                            image: NetworkImage(
+                              subCategory.image.toString().replaceAll("localhost", "10.0.2.2")),
+                          fit: BoxFit.fill
                         )
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
-                Column(
-                  children: [
-                    Text(
-                      homeController.sub_categories[index].title.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
+
+                Container(
+                  height: 35,
+                  child: Column(
+                    children: [
+                      Text(
+                        subCategory.title.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                        maxLines: 2,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -565,7 +701,7 @@ class Home extends StatelessWidget {
         Container(
           child: GestureDetector(
             onTap: () {
-              //todo something
+              homeController.go_to_product_page( homeController.homePage.flashSale[index].id);
             },
             child: Stack(
               children: [
@@ -574,9 +710,9 @@ class Home extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.15,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage(
-                            homeController.flash_sales_image[index],)
+                          fit: BoxFit.fill,
+                          image: NetworkImage(
+                            homeController.homePage.flashSale[index].image.replaceAll("localhost", "10.0.2.2"),)
                       )
                   ),
                 ),
@@ -588,7 +724,7 @@ class Home extends StatelessWidget {
         SizedBox(height: 8),
         Container(
           width: MediaQuery.of(context).size.width * 0.25,
-          child: Text("US\$2.00",
+          child: Text((homeController.homePage.flashSale[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 15
@@ -596,7 +732,7 @@ class Home extends StatelessWidget {
         ),
         Container(
           width: MediaQuery.of(context).size.width * 0.25,
-          child: Text("US\$5.00",
+          child: Text( (homeController.homePage.flashSale[index].oldPrice*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
             style: TextStyle(
                 decorationColor: Colors.white,
                 decoration: TextDecoration.lineThrough,
@@ -620,8 +756,10 @@ class Home extends StatelessWidget {
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10
             ),
-            itemCount: homeController.products.length,
+            itemCount: homeController.homePage.home_page_products.length,
             itemBuilder: (BuildContext ctx, index) {
+              // print(index);
+              // print(homeController.homePage.home_page_products.length);
               return _list_products(context,index);
             }),
       ),
@@ -634,45 +772,45 @@ class Home extends StatelessWidget {
           flex: 3,
           child:GestureDetector(
             onTap: () {
-              Get.to(()=>ProductInfo(homeController.products[index]));
-            },
+              homeController.go_to_product_page(homeController.homePage.home_page_products[index].id);
+             },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(15)),
                 image: DecorationImage(
-                    image: AssetImage(homeController.products[index].image.toString()),
-                    fit: BoxFit.cover
+                    image: NetworkImage(homeController.homePage.home_page_products[index].image.toString().replaceAll("localhost", "10.0.2.2")),
+                    fit: BoxFit.fill
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Obx(() => GestureDetector(
-                      onTap: () {
-                        homeController.wishlistIcon.value = !homeController.wishlistIcon.value;
-                      },
-                      child: homeController.wishlistIcon.value
-                          ? Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                        size: 25,
-                      )
-                          : Icon(
-                        Icons.favorite_outlined,
-                        color: AppColors.main,
-                        size: 25,
-                      ),
-                    ))
-                ),
-              ),
+              // child: Padding(
+              //   padding: const EdgeInsets.all(5),
+              //   child: Align(
+              //       alignment: Alignment.bottomRight,
+              //       child: Obx(() => GestureDetector(
+              //         onTap: () {
+              //           homeController.wishlistIcon.value = !homeController.wishlistIcon.value;
+              //         },
+              //         child: homeController.wishlistIcon.value
+              //             ? Icon(
+              //           Icons.favorite_border,
+              //           color: Colors.white,
+              //           size: 25,
+              //         )
+              //             : Icon(
+              //           Icons.favorite_outlined,
+              //           color: AppColors.main,
+              //           size: 25,
+              //         ),
+              //       ))
+              //   ),
+              // ),
             ),
           ),),
         Expanded(
             flex:1,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(homeController.products[index].price.toString(),
+              child: Text((homeController.homePage.home_page_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 15
@@ -682,31 +820,77 @@ class Home extends StatelessWidget {
     );
   }
   _pressed_on_search(BuildContext context) async {
-    final int? selected = await showSearch<int>(
-      context: context,
-      delegate: delegate,
-    );
-    if (selected != null && selected != homeController.Selected) {
-      homeController.Selected = selected;
-    }
+    final result = await showSearch(
+        context: context,
+        delegate: SearchTextField(suggestion_list: Global.suggestion_list,homeController: homeController));
+    homeController.go_to_search_page(result!);
+    print(result);
   }
 }
 
-class SearchDemoSearchDelegate extends SearchDelegate<int> {
-  final List<int> _data = List<int>.generate(100001, (int i) => i).reversed.toList();
-  final List<int> _history = <int>[42607, 85604, 66374, 44, 174];
+class SearchTextField extends SearchDelegate<String> {
+  final List<String> suggestion_list;
+  String? result;
+  HomeController homeController;
+
+  SearchTextField(
+      {required this.suggestion_list, required this.homeController});
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      query.isEmpty
+          ? Visibility(
+        child: Text(''),
+        visible: false,
+      )
+          : IconButton(
+        icon: Icon(Icons.search, color: Colors.white,),
+        onPressed: () {
+          close(context, query);
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        Get.back();
+      },
+    );
+  }
 
 
   @override
   ThemeData appBarTheme(BuildContext context) {
     return super.appBarTheme(context).copyWith(
       appBarTheme: AppBarTheme(
-        color: Colors.black,
+        color: AppColors.main, //new AppBar color
         elevation: 0,
       ),
       hintColor: Colors.white,
       textTheme: TextTheme(
         headline6: TextStyle(
+            color: Colors.white
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final suggestions = suggestion_list.where((name) {
+      return name.toLowerCase().contains(query.toLowerCase());
+    });
+    homeController.go_to_search_page(query);
+    close(context, query);
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: CircularProgressIndicator(
           color: Colors.white,
         ),
       ),
@@ -714,90 +898,27 @@ class SearchDemoSearchDelegate extends SearchDelegate<int> {
   }
 
   @override
-  String get searchFieldLabel => 'search'.tr;
-
-  @override
   Widget buildSuggestions(BuildContext context) {
-    final Iterable<int> suggestions = query.isEmpty
-        ? _history
-        : _data.where((int i) => '$i'.startsWith(query));
-
+    final suggestions = suggestion_list.where((name) {
+      return name.toLowerCase().contains(query.toLowerCase());
+    });
     return Container(
       color: AppColors.main,
-      child: _SuggestionList(
-        query: query,
-        suggestions: suggestions.map<String>((int i) => '$i').toList(),
-        onSelected: (String suggestion) {
-          query = suggestion;
-          showResults(context);
+      child: ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(
+              suggestions.elementAt(index),
+              style: TextStyle(color: AppColors.main2),
+            ),
+            onTap: () {
+              query = suggestions.elementAt(index);
+              close(context, query);
+            },
+          );
         },
       ),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final int? searched = int.tryParse(query);
-    if (searched == null || !_data.contains(searched)) {
-      return Container(
-        color: AppColors.main,
-        child: Center(
-          child: Text(
-            '" $query "\n is not exists',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      color: AppColors.main,
-      child: Center(
-        //when i click on suggestion
-      ),
-    );
-  }
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return <Widget>[
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-          showSuggestions(context);
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return null;
-  }
-}
-class _SuggestionList extends StatelessWidget {
-  const _SuggestionList({required this.suggestions, required this.query, required this.onSelected});
-
-  final List<String> suggestions;
-  final String query;
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (BuildContext context, int i) {
-        final String suggestion = suggestions[i];
-        return ListTile(
-          title: Text(suggestion.substring(query.length),
-            style: TextStyle(color: Colors.white),),
-          onTap: () {
-            onSelected(suggestion);
-          },
-        );
-      },
     );
   }
 }

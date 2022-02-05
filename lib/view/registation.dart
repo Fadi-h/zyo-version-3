@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
@@ -16,20 +17,33 @@ class Registration extends StatelessWidget {
     return Scaffold(
       key: registrationController.globalKey,
       body: SafeArea(
-          child: Obx(() => Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            color: AppColors.main,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _header(context),
-                  registrationController.selected.value==0 ? _sign_in(context) : _register(context),
-                  SizedBox(height: 100),
-                  _footer(context)
-                ],
+          child: Obx(() => Stack(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: AppColors.main,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _header(context),
+                      registrationController.selected.value==0 ? _sign_in(context) : _register(context),
+                      SizedBox(height: 100),
+                      _footer(context)
+                    ],
+                  ),
+                ),
               ),
-            ),
+              Positioned(child: !registrationController.loading.value?Center():
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                color: Colors.black.withOpacity(0.7),
+                child: Center(
+                  child: CircularProgressIndicator(color: Colors.white,),
+                ),
+              ))
+            ],
           ))
       ),
     );
@@ -48,13 +62,20 @@ class Registration extends StatelessWidget {
           Column(
             children: [
               Container(
-                width: MediaQuery.of(context).size.width * 0.4,
+                width: MediaQuery.of(context).size.width * 0.5,
                 height: MediaQuery.of(context).size.height * 0.1,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage("assets/logo/logo2.png"),
-                )),
-              )
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      height: MediaQuery.of(context).size.height * 0.05,
+                      child:  SvgPicture.asset("assets/logo/logo.svg",),
+                    )
+
+                  ],
+                ),
+              ),
             ],
           ),
           GestureDetector(
@@ -353,7 +374,8 @@ class Registration extends StatelessWidget {
   _sign_button(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        registrationController.next_sign_in();
+        // registrationController.next_sign_in();
+        registrationController.signIn(context, registrationController.email_sign_in.text, registrationController.password_sign_in.text);
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.93,
@@ -405,6 +427,80 @@ class Registration extends StatelessWidget {
           ),
         ),
         SizedBox(height: 30),
+
+        Container(
+          width: MediaQuery.of(context).size.width * 0.95,
+          child: TextField(
+            style: TextStyle(color: Colors.white),
+            controller: registrationController.fname_register,
+            cursorColor: Colors.white,
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              focusedErrorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(color: Colors.red)),
+              errorText:
+              registrationController.validate_register.value &&
+                  (registrationController.fname_register.text.isEmpty ) ?
+              App_Localization.of(context)!.translate("first_name_required") : null,
+              errorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(color: Colors.red)),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              hintText: App_Localization.of(context)!.translate("first_name"),
+              hintStyle: TextStyle(color: Colors.white,fontSize: 15),
+              contentPadding: EdgeInsets.all(5),
+              suffixIcon: Icon(
+                     Icons.person,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: !registrationController.validate_register.value ? 5 : 0),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.95,
+          child: TextField(
+            style: TextStyle(color: Colors.white),
+            controller: registrationController.lname_register,
+            cursorColor: Colors.white,
+
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              focusedErrorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(color: Colors.red)),
+              errorText:
+              registrationController.validate_register.value &&
+                  (registrationController.lname_register.text.isEmpty) ?
+              App_Localization.of(context)!.translate("last_name_required") : null,
+              errorBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide(color: Colors.red)),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              hintText: App_Localization.of(context)!.translate("last_name"),
+              hintStyle: TextStyle(color: Colors.white,fontSize: 15),
+              contentPadding: EdgeInsets.all(5),
+              suffixIcon: Icon(
+                Icons.person,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: !registrationController.validate_register.value ? 5 : 0),
         Container(
           width: MediaQuery.of(context).size.width * 0.95,
           child: TextField(
@@ -606,7 +702,7 @@ class Registration extends StatelessWidget {
   _register_button(BuildContext context) {
     return GestureDetector(
       onTap: () {
-       registrationController.next_register(context);
+       registrationController.signUp(context,registrationController.email_register.text, registrationController.password_register.text,registrationController.fname_register.text,registrationController.lname_register.text);
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.93,

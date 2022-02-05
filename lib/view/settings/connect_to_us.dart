@@ -61,9 +61,9 @@ class ConnectToUs extends StatelessWidget {
       children: [
         SizedBox(height: 20,),
         _facebook(context),
-        SizedBox(height: 10,),
+        SizedBox(height: 20,),
         _instagram(context),
-        SizedBox(height: 10,),
+        SizedBox(height: 20,),
         _twitter(context)
       ],
     );
@@ -71,7 +71,6 @@ class ConnectToUs extends StatelessWidget {
   _facebook(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.1,
       color: AppColors.main3,
       child: GestureDetector(
         onTap: () {
@@ -94,7 +93,6 @@ class ConnectToUs extends StatelessWidget {
   _instagram(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.1,
       color: AppColors.main3,
       child: GestureDetector(
         onTap: () {
@@ -125,7 +123,6 @@ class ConnectToUs extends StatelessWidget {
   _twitter(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.1,
       color: AppColors.main3,
       child: GestureDetector(
         onTap: () {

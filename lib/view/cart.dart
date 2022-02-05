@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/controller/cart_controller.dart';
 
 class Cart extends StatelessWidget {
@@ -14,18 +15,30 @@ class Cart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body:  Obx(() => SafeArea(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: AppColors.main,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _header(context),
-                _body(context),
-              ],
+        child: Stack(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              color: AppColors.main,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _header(context),
+                    _body(context),
+                  ],
+                ),
+              ),
             ),
-          ),
+            Positioned(child: cartController.loading.value?Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              color: Colors.black.withOpacity(0.7),
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.white,),
+              ),
+            ):Center())
+          ],
         ),
       ))
     );
@@ -74,7 +87,7 @@ class Cart extends StatelessWidget {
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: 4,
+        itemCount: cartController.my_order.length,
         itemBuilder: (context, index) {
           return Column(
             children: [
@@ -88,7 +101,7 @@ class Cart extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage("assets/home/flash_sale/1.png"),
+                        image: NetworkImage(cartController.my_order.value[index].product.value.image.replaceAll("localhost", "10.0.2.2")),
                       ),
                     ),
                   ),
@@ -103,7 +116,7 @@ class Cart extends StatelessWidget {
                           child: Container(
                           width: MediaQuery.of(context).size.width * 0.6,
                           child: Text(
-                            "Crop Top Dragon Totem Print Let",
+                            cartController.my_order[index].product.value.title,
                             style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 color: Colors.white,
@@ -115,7 +128,7 @@ class Cart extends StatelessWidget {
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.6,
                               child: Text(
-                                "US\$9.00",
+                                (cartController.my_order[index].product.value.price*Global.currency_covert).toStringAsFixed(2)+" "+ App_Localization.of(context)!.translate(Global.currency_code),
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -127,95 +140,67 @@ class Cart extends StatelessWidget {
                             flex: 1,
                             child:  Container(
                               width: MediaQuery.of(context).size.width * 0.6,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "US\$0.99",
-                                    style: TextStyle(
-                                      color: AppColors.main2,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    App_Localization.of(context)!.translate("cheaper_than_added"),
-                                    style: TextStyle(
-                                      color: AppColors.main2,
-                                      fontSize: 10,
-                                    ),
-                                  )
-                                ],
-                              ),
+
                             ),),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              children: [
-                                Container(
-                                  height: 20,
-                                  width: MediaQuery.of(context).size.width * 0.18,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text("S /",
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Container(
-                                        width: 8,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            color: cartController.colors[index],
-                                            shape: BoxShape.circle
-                                        ),
-                                      ),
-                                    ],
+                            Container(
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Center(
+                                child:  Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  child: Text(cartController.my_order[index].product.value.cart_details,
+                                    style: TextStyle(fontSize: 12),
                                   ),
                                 ),
-                              ],
+                              )
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white , width: 1),
-                                    borderRadius: BorderRadius.circular(20),
+
+                            Container(
+                              height: 30,
+
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                border: Border.all(color: Colors.white , width: 1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      cartController.decrease(cartController.my_order[index], index);
+                                    },
+                                    icon: Icon(
+                                      Icons.remove,
+                                      size: 15,
+                                    ), color: Colors.white,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          cartController.decrease();
-                                        },
-                                        icon: Icon(
-                                          Icons.remove,
-                                          size: 15,
-                                        ), color: Colors.white,
-                                      ),
-                                      Obx(() =>
-                                          Text(cartController.count.value.toString(),
-                                            style: TextStyle(
-                                              color: Colors.white,),
-                                          ),),
-                                      IconButton(
-                                        onPressed: () {
-                                          cartController.increase();
-                                        },
-                                        icon: Icon(
-                                          Icons.add,
-                                          size: 15,
-                                        ),
-                                        color: Colors.white,)
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )
+                                  Obx((){
+                                    return
+                                      Text(cartController.my_order[index].quantity.value.toString(),
+                                        style: TextStyle(
+                                          color: Colors.white,),
+                                      );
+                                  }),
+
+                                  IconButton(
+                                    onPressed: () {
+                                      cartController.increase(cartController.my_order[index], index);
+                                    },
+                                    icon: Icon(
+                                      Icons.add,
+                                      size: 15,
+                                    ),
+                                    color: Colors.white,)
+                                ],
+                              ),
+                            ),
+
                           ],
                         ),
                       ],
@@ -257,8 +242,14 @@ class Cart extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         _sub_total(context),
-        const SizedBox(height: 25),
-        _shipping(context)
+        const SizedBox(height: 20),
+        _shipping(context),
+        Global.dis_code==0?Center():const SizedBox(height: 20),
+        Global.dis_code==0?Center():_coupon(context),
+        Global.dis_code==0?Center():const SizedBox(height: 20),
+        Global.dis_code==0?Center():_dicount(context),
+        const SizedBox(height: 20),
+        _total(context)
       ],
     );
   }
@@ -297,7 +288,7 @@ class Cart extends StatelessWidget {
                     return SizedBox(
                       width: dashWidth,
                       height: dashHeight,
-                      child: const DecoratedBox(
+                      child: DecoratedBox(
                         decoration:
                         BoxDecoration(color: Colors.white),
                       ),
@@ -315,7 +306,205 @@ class Cart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "\$30.00",
+                (double.parse(cartController.sub_total.value)*Global.currency_covert).toString()+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  _coupon(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                App_Localization.of(context)!.translate("coupon"),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15
+                ),
+              ),
+            ],
+          ),
+          SizedBox(width: 5),
+          Flexible(
+            flex: 1,
+            fit: FlexFit.loose,
+            child: LayoutBuilder(
+              builder: (BuildContext context,
+                  BoxConstraints constraints) {
+                final boxWidth = constraints.constrainWidth();
+                final dashWidth = 4.0;
+                final dashHeight = 2.0;
+                final dashCount =
+                (boxWidth / (2 * dashWidth)).floor();
+                return Flex(
+                  children: List.generate(dashCount, (_) {
+                    return SizedBox(
+                      width: dashWidth,
+                      height: dashHeight,
+                      child: DecoratedBox(
+                        decoration:
+                        BoxDecoration(color: Colors.white),
+                      ),
+                    );
+                  }),
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  direction: Axis.horizontal,
+                );
+              },
+            ),
+          ),
+          SizedBox(width: 5,),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                (double.parse(cartController.coupon.value)*Global.currency_covert).toString()+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  _dicount(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                App_Localization.of(context)!.translate("discount"),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15
+                ),
+              ),
+            ],
+          ),
+          SizedBox(width: 5),
+          Flexible(
+            flex: 1,
+            fit: FlexFit.loose,
+            child: LayoutBuilder(
+              builder: (BuildContext context,
+                  BoxConstraints constraints) {
+                final boxWidth = constraints.constrainWidth();
+                final dashWidth = 4.0;
+                final dashHeight = 2.0;
+                final dashCount =
+                (boxWidth / (2 * dashWidth)).floor();
+                return Flex(
+                  children: List.generate(dashCount, (_) {
+                    return SizedBox(
+                      width: dashWidth,
+                      height: dashHeight,
+                      child: DecoratedBox(
+                        decoration:
+                        BoxDecoration(color: Colors.white),
+                      ),
+                    );
+                  }),
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  direction: Axis.horizontal,
+                );
+              },
+            ),
+          ),
+          SizedBox(width: 5,),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                Global.dis_code.toString()+" %",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  } 
+  _total(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                App_Localization.of(context)!.translate("totals"),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15
+                ),
+              ),
+            ],
+          ),
+          SizedBox(width: 5),
+          Flexible(
+            flex: 1,
+            fit: FlexFit.loose,
+            child: LayoutBuilder(
+              builder: (BuildContext context,
+                  BoxConstraints constraints) {
+                final boxWidth = constraints.constrainWidth();
+                final dashWidth = 4.0;
+                final dashHeight = 2.0;
+                final dashCount =
+                (boxWidth / (2 * dashWidth)).floor();
+                return Flex(
+                  children: List.generate(dashCount, (_) {
+                    return SizedBox(
+                      width: dashWidth,
+                      height: dashHeight,
+                      child: DecoratedBox(
+                        decoration:
+                        BoxDecoration(color: Colors.white),
+                      ),
+                    );
+                  }),
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  direction: Axis.horizontal,
+                );
+              },
+            ),
+          ),
+          SizedBox(width: 5,),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                (double.parse(cartController.total.value)*Global.currency_covert).toString()+" "+App_Localization.of(context)!.translate(Global.currency_code),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -381,7 +570,7 @@ class Cart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "\$0.0",
+                (double.parse(cartController.shipping.value)*Global.currency_covert).toString()+" "+App_Localization.of(context)!.translate(Global.currency_code),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -407,14 +596,13 @@ class Cart extends StatelessWidget {
               style: TextStyle(color: Colors.white),
               controller: cartController.code,
               cursorColor: Colors.white,
-              keyboardType: TextInputType.number,
               textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
                 focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(color: Colors.red)),
-                errorText: cartController.validate.value && cartController.code.text.isEmpty ?
-                App_Localization.of(context)!.translate("please_enter_the_code") : null,
+                // errorText: cartController.validate.value && cartController.code.text.isEmpty ?
+                // App_Localization.of(context)!.translate("please_enter_the_code") : null,
                 errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                     borderSide: BorderSide(color: Colors.red)),
@@ -432,20 +620,26 @@ class Cart extends StatelessWidget {
           ),
           GestureDetector(
               onTap: () {
-                if(cartController.code.text.isEmpty) {
-                  cartController.validate.value = true;
-                }
+                // if(cartController.code.text.isEmpty) {
+                //   cartController.validate.value = true;
+                // }
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 35,
-                    child: Text(App_Localization.of(context)!.translate("apply"),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18
-                      ),),
+                  GestureDetector(
+                    onTap: (){
+                      cartController.Apply_code(context,cartController.code.text);
+                      cartController.code.clear();
+                    },
+                    child: Container(
+                      height: 35,
+                      child: Text(App_Localization.of(context)!.translate("apply"),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18
+                        ),),
+                    ),
                   ),
                   Container(
                     height: 10,
@@ -459,13 +653,15 @@ class Cart extends StatelessWidget {
   }
   _footer(BuildContext context) {
     return GestureDetector(
-      onTap: () => cartController.checkout(context),
+      onTap: () {
+
+      },
       child: Container(
         color: Colors.white,
         width: MediaQuery.of(context).size.width * 0.93,
         height: 50,
         child: Center(
-          child: Text(App_Localization.of(context)!.translate("checkout")+ "(4)",
+          child: Text(App_Localization.of(context)!.translate("checkout")+" (" +cartController.my_order.length.toString()+")",
             style: TextStyle(
                 color: AppColors.main,
                 fontSize: 18,
@@ -476,4 +672,6 @@ class Cart extends StatelessWidget {
       ),
     );
   }
+
+
 }
