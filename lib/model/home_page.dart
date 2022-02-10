@@ -8,6 +8,8 @@ class HomePage {
     required this.flashSale,
     required this.home_page_products,
     required this.new_products,
+    required this.ages,
+    required this.unisex,
   });
   late final List<Category> category;
   late final List<MySlider> slider;
@@ -15,6 +17,8 @@ class HomePage {
   late final List<FlashSale> flashSale;
   late final List<Product> home_page_products;
   late final List<Product> new_products;
+  late final List<Brands> ages;
+  late final List<Brands> unisex;
 
   HomePage.fromJson(Map<String, dynamic> json){
     category = List.from(json['category']).map((e)=>Category.fromJson(e)).toList();
@@ -23,6 +27,8 @@ class HomePage {
     flashSale = List.from(json['flash_sale']).map((e)=>FlashSale.fromJson(e)).toList();
     home_page_products = List.from(json['home_page_product']).map((e)=>Product.fromJson(e)).toList();
     new_products = List.from(json['new']).map((e)=>Product.fromJson(e)).toList();
+    ages = List.from(json['brands']).map((e)=>Brands.fromJson(e)).toList();
+    unisex = List.from(json['unisex']).map((e)=>Brands.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {

@@ -184,5 +184,12 @@
   "pass": "password is changed successfully.",
   "AED": "AED",
   "Dollar": "$",
-  "USD": "USD"
+  "USD": "USD",
+  "cod": "COD",
+  "cod_sub_title": "Cash On Delivery",
+  "s_order": "Your order is saved successfully",
+  "shop_by_age": "SHOP BY AGE",
+  "shop_by_unisex": "SHOP BY UNISEX",
+  "check_mail": "Please check your email",
+  "no_content": "This content have no elements"
 }

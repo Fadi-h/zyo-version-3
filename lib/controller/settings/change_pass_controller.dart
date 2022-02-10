@@ -51,6 +51,7 @@ class ChangePassController extends GetxController {
               loading.value=false;
               if(result.succses){
                 App.sucss_msg(context, App_Localization.of(context)!.translate("pass"));
+                Get.back();
               }else{
                 App.error_msg(context, App_Localization.of(context)!.translate("wrong"));
               }

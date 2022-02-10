@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
-import 'package:zyo_version_1/controller/checkout_controller.dart';
+import 'package:zyo_version_1/controller/address_controller.dart';
 
 class AddressView extends StatelessWidget {
   AddressView({Key? key}) : super(key: key);
 
-  CheckoutController checkoutController = Get.put(CheckoutController());
+  AddressController checkoutController = Get.put(AddressController());
 
   @override
   Widget build(BuildContext context) {

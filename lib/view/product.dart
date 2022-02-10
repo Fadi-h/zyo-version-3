@@ -339,11 +339,11 @@ class ProductInfo extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 10),
                   child: Row(
                     children: [
-                      Icon(Icons.favorite, color: Colors.black,size: 30,),
+                      Icon(Icons.favorite, color: Colors.red,size: 30,),
                       SizedBox(width: 7,),
                       Text(product_data.product.likes.value.toString(),
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.red,
                             fontSize: 15
                         ),),
                     ],
@@ -904,6 +904,13 @@ class ProductInfo extends StatelessWidget {
                   Api.check_internet().then((net) {
                     if(net){
                       Api.add_review(Global.customer!.id, product_data.product.id, productController.review_controller.text);
+                      List<Review> reviews = <Review>[];
+                      reviews.add(Review(id: -1, priductId: product_data.product.id, customerId: Global.customer!.id, body: productController.review_controller.text, customer: Global.customer!.firstname));
+                      reviews.addAll(product_data.review);
+                      product_data.review.clear();
+                      product_data.review.addAll(reviews);
+                      productController.review_controller.clear();
+                      productController.loading.value=false;
                     }else{
                       Get.to(NoInternet())!.then((value) {
                         Api.add_review(Global.customer!.id, product_data.product.id, productController.review_controller.text);
@@ -911,13 +918,7 @@ class ProductInfo extends StatelessWidget {
                     }
                   });
 
-                  List<Review> reviews = <Review>[];
-                  reviews.add(Review(id: -1, priductId: product_data.product.id, customerId: Global.customer!.id, body: productController.review_controller.text, customer: Global.customer!.firstname));
-                  reviews.addAll(product_data.review);
-                  product_data.review.clear();
-                  product_data.review.addAll(reviews);
-                  productController.review_controller.clear();
-                  productController.loading.value=false;
+
                 }
               }
             },

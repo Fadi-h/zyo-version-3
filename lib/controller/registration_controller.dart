@@ -98,7 +98,7 @@ class RegistrationController extends GetxController {
       if(email_register.text.isEmpty || password_register.text.isEmpty ||
           !RegExp(r'\S+@\S+\.\S+').hasMatch(email_register.text) ||
           fname.isEmpty||lname.isEmpty||
-          password_register.text.length < 6 || isChecked_1.value==false || isChecked_2.value==false){
+          password_register.text.length < 6 ){
           validate_register.value=true;
       }else{
         Api.check_internet().then((net) {

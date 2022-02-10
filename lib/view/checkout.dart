@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
+import 'package:zyo_version_1/controller/address_controller.dart';
 import 'package:zyo_version_1/controller/checkout_controller.dart';
 
 class Checkout extends StatelessWidget {
   Checkout({Key? key}) : super(key: key);
-
   CheckoutController checkoutController = Get.put(CheckoutController());
 
   @override
@@ -50,11 +50,11 @@ class Checkout extends StatelessWidget {
               Get.back();
             },
             child: Text(App_Localization.of(context)!.translate("shopping_address"),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold
-            ),),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+              ),),
           )
         ],
       ),
@@ -69,8 +69,8 @@ class Checkout extends StatelessWidget {
         _names_and_phone(context),
         SizedBox(height: 20),
         _state_city_and_address(context),
-        SizedBox(height: 20),
-        _make_default(context),
+        // SizedBox(height: 20),
+        // _make_default(context),
         SizedBox(height: 35),
         _save(context),
         SizedBox(height: 20),
@@ -120,7 +120,7 @@ class Checkout extends StatelessWidget {
                   appBar: AppBar(
                     backgroundColor: Colors.black,
                     title: Text(
-                      App_Localization.of(context)!.translate("choose_a_country")
+                        App_Localization.of(context)!.translate("choose_a_country")
                     ),
                   ),
                   theme: CountryTheme(
@@ -133,9 +133,11 @@ class Checkout extends StatelessWidget {
                     isDownIcon: true,
                     showEnglishName: true,
                   ),
-                  initialSelection: '+971',
+                  initialSelection: checkoutController.country_code,
                   onChanged: (CountryCode? code) {
-                    print(code!.name.toString());
+                    checkoutController.country=code!.name.toString();
+                    checkoutController.country_code=code.dialCode.toString();
+                    print(code.dialCode.toString());
                   },
                 )
               ],
@@ -151,64 +153,6 @@ class Checkout extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       child: Column(
         children: [
-          SizedBox(height: 10),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.93,
-            child: TextField(
-              style: TextStyle(color: Colors.white),
-              controller: checkoutController.first_name,
-              cursorColor: Colors.white,
-              textAlignVertical: TextAlignVertical.center,
-              decoration: InputDecoration(
-                errorText:
-                checkoutController.validate.value && checkoutController.first_name.text.isEmpty ?
-                App_Localization.of(context)!.translate("first_name_is_required") : null,
-                focusedErrorBorder: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: BorderSide(color: Colors.red)),
-                errorBorder: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: BorderSide(color: Colors.red)),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.main2),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.main2),
-                ),
-                hintText:  App_Localization.of(context)!.translate("first_name"),
-                hintStyle: TextStyle(color: Colors.white,fontSize: 16),
-              ),
-            ),
-          ),
-          SizedBox(height: 10,),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.93,
-            child: TextField(
-              style: TextStyle(color: Colors.white),
-              controller: checkoutController.last_name,
-              cursorColor: Colors.white,
-              textAlignVertical: TextAlignVertical.center,
-              decoration: InputDecoration(
-                focusedErrorBorder: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: BorderSide(color: Colors.red)),
-                errorText:
-                checkoutController.validate.value && checkoutController.last_name.text.isEmpty ?
-                App_Localization.of(context)!.translate("last_name_is_required") : null,
-                errorBorder: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: BorderSide(color: Colors.red)),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.main2),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.main2),
-                ),
-                hintText: App_Localization.of(context)!.translate("last_name"),
-                hintStyle: TextStyle(color: Colors.white,fontSize: 16),
-              ),
-            ),
-          ),
           SizedBox(height: 10,),
           Container(
               width: MediaQuery.of(context).size.width * 0.93,
@@ -235,12 +179,12 @@ class Checkout extends StatelessWidget {
                     borderSide: BorderSide(color: AppColors.main2),
                   ),
                 ),
-                initialCountryCode: 'AE',
+                initialCountryCode: checkoutController.phone_init,
                 countryCodeTextColor: Colors.white,
                 showDropdownIcon: false,
-                onChanged: (phone) {
-                  //when phone number country code is changed
-                  print(phone.countryCode); // get country code only
+                onCountryChanged: (phone){
+                  checkoutController.phone_code=phone.countryCode!;
+                  print(phone.countryCode);
                 },
               )
           ),
@@ -400,7 +344,7 @@ class Checkout extends StatelessWidget {
                   activeColor: Colors.white,
                   value: checkoutController.isSwitched.value,
                   onChanged: (value) {
-                      checkoutController.isSwitched.value = value;
+                    checkoutController.isSwitched.value = value;
                   },
                 ),
               ],
@@ -412,13 +356,16 @@ class Checkout extends StatelessWidget {
   }
   _save(BuildContext context) {
     return GestureDetector(
-      onTap: () => checkoutController.save(context),
+      onTap: () {
+        //todo make order
+        checkoutController.add_order(context);
+      },
       child: Container(
         color: Colors.white,
         width: MediaQuery.of(context).size.width * 0.93,
         height: MediaQuery.of(context).size.height * 0.08,
         child: Center(
-          child: Text(App_Localization.of(context)!.translate("save"),
+          child: Text(App_Localization.of(context)!.translate("submit"),
             style: TextStyle(
                 color: AppColors.main,
                 fontSize: 18,
@@ -429,4 +376,6 @@ class Checkout extends StatelessWidget {
       ),
     );
   }
+
+
 }

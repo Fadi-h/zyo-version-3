@@ -30,7 +30,7 @@ class Registration extends StatelessWidget {
                       _header(context),
                       registrationController.selected.value==0 ? _sign_in(context) : _register(context),
                       SizedBox(height: 100),
-                      _footer(context)
+                      // _footer(context)
                     ],
                   ),
                 ),
@@ -581,120 +581,120 @@ class Registration extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 15),
-        GestureDetector(
-          onTap: () {
-            registrationController.isChecked_1.value =
-            ! registrationController.isChecked_1.value;
-          },
-          child: Container(
-            color: Colors.transparent,
-            width: MediaQuery.of(context).size.width * 0.93,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    registrationController.isChecked_1.value =
-                    ! registrationController.isChecked_1.value;
-                  },
-                  child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                          color: !registrationController.isChecked_1.value ?
-                          Colors.transparent : Colors.blue,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white,width: 1.5)
-                      ),
-                      child: Center(
-                          child: Icon(
-                            Icons.check,size:15,
-                            color: registrationController.isChecked_1.value ?
-                            Colors.white : Colors.transparent,
-                          ))
-                  ),
-                ),
-                SizedBox(width: 5,),
-                Center(
-                  child: Text(
-                    App_Localization.of(context)!.translate("i_agree_to_the"),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12
-                    ),),
-                ),
-                Center(
-                  child: Text(" "+
-                      App_Localization.of(context)!.translate("privacy_&_cookie_policy"),
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 12
-                    ),),
-                )
-              ],
-            ),
-          ),
-        ),
-        SizedBox(height: 15),
-        GestureDetector(
-          onTap: () {
-            registrationController.isChecked_2.value =
-            ! registrationController.isChecked_2.value;
-          },
-          child: Container(
-            color: Colors.transparent,
-            width: MediaQuery.of(context).size.width * 0.93,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    registrationController.isChecked_2.value =
-                    ! registrationController.isChecked_2.value;
-                  },
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.18,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            width: 18,
-                            height: 18,
-                            decoration: BoxDecoration(
-                                color: !registrationController.isChecked_2.value ?
-                                Colors.transparent : Colors.blue,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white,width: 1.5)
-                            ),
-                            child: Center(
-                                child: Icon(
-                                  Icons.check,size:15,
-                                  color: registrationController.isChecked_2.value ?
-                                  Colors.white : Colors.transparent,
-                                ))
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 5,),
-                Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.84,
-                      height: MediaQuery.of(context).size.height * 0.18,
-                      child: Text(
-                        App_Localization.of(context)!.translate("by_registering"),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12
-                        ),),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
+        SizedBox(height: 30),
+        // GestureDetector(
+        //   onTap: () {
+        //     registrationController.isChecked_1.value =
+        //     ! registrationController.isChecked_1.value;
+        //   },
+        //   child: Container(
+        //     color: Colors.transparent,
+        //     width: MediaQuery.of(context).size.width * 0.93,
+        //     child: Row(
+        //       children: [
+        //         GestureDetector(
+        //           onTap: () {
+        //             registrationController.isChecked_1.value =
+        //             ! registrationController.isChecked_1.value;
+        //           },
+        //           child: Container(
+        //               width: 18,
+        //               height: 18,
+        //               decoration: BoxDecoration(
+        //                   color: !registrationController.isChecked_1.value ?
+        //                   Colors.transparent : Colors.blue,
+        //                   shape: BoxShape.circle,
+        //                   border: Border.all(color: Colors.white,width: 1.5)
+        //               ),
+        //               child: Center(
+        //                   child: Icon(
+        //                     Icons.check,size:15,
+        //                     color: registrationController.isChecked_1.value ?
+        //                     Colors.white : Colors.transparent,
+        //                   ))
+        //           ),
+        //         ),
+        //         SizedBox(width: 5,),
+        //         Center(
+        //           child: Text(
+        //             App_Localization.of(context)!.translate("i_agree_to_the"),
+        //             style: TextStyle(
+        //                 color: Colors.white,
+        //                 fontSize: 12
+        //             ),),
+        //         ),
+        //         Center(
+        //           child: Text(" "+
+        //               App_Localization.of(context)!.translate("privacy_&_cookie_policy"),
+        //             style: TextStyle(
+        //                 color: Colors.blue,
+        //                 fontSize: 12
+        //             ),),
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        // SizedBox(height: 15),
+        // GestureDetector(
+        //   onTap: () {
+        //     registrationController.isChecked_2.value =
+        //     ! registrationController.isChecked_2.value;
+        //   },
+        //   child: Container(
+        //     color: Colors.transparent,
+        //     width: MediaQuery.of(context).size.width * 0.93,
+        //     child: Row(
+        //       children: [
+        //         GestureDetector(
+        //           onTap: () {
+        //             registrationController.isChecked_2.value =
+        //             ! registrationController.isChecked_2.value;
+        //           },
+        //           child: Container(
+        //             height: MediaQuery.of(context).size.height * 0.18,
+        //             child: Column(
+        //               crossAxisAlignment: CrossAxisAlignment.start,
+        //               children: [
+        //                 Container(
+        //                     width: 18,
+        //                     height: 18,
+        //                     decoration: BoxDecoration(
+        //                         color: !registrationController.isChecked_2.value ?
+        //                         Colors.transparent : Colors.blue,
+        //                         shape: BoxShape.circle,
+        //                         border: Border.all(color: Colors.white,width: 1.5)
+        //                     ),
+        //                     child: Center(
+        //                         child: Icon(
+        //                           Icons.check,size:15,
+        //                           color: registrationController.isChecked_2.value ?
+        //                           Colors.white : Colors.transparent,
+        //                         ))
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //         ),
+        //         SizedBox(width: 5,),
+        //         Column(
+        //           children: [
+        //             Container(
+        //               width: MediaQuery.of(context).size.width * 0.84,
+        //               height: MediaQuery.of(context).size.height * 0.18,
+        //               child: Text(
+        //                 App_Localization.of(context)!.translate("by_registering"),
+        //                 style: TextStyle(
+        //                     color: Colors.white,
+        //                     fontSize: 12
+        //                 ),),
+        //             ),
+        //           ],
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // ),
         SizedBox(height: 15,),
         _register_button(context)
       ],

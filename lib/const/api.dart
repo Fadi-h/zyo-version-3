@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:zyo_version_1/const/global.dart';
@@ -27,8 +28,42 @@ class Api {
       return HomePage.fromJson(json.decode(jsonString));
     }
     else {
-      return HomePage( category: <Category>[], slider: <MySlider>[], comingSoon: <ComingSoon>[],flashSale: <FlashSale>[],home_page_products: <Product>[],new_products: <Product>[]);
+      return HomePage( category: <Category>[], slider: <MySlider>[], comingSoon: <ComingSoon>[],flashSale: <FlashSale>[],home_page_products: <Product>[],new_products: <Product>[],ages: <Brands>[],unisex: <Brands>[]);
     }
+  }
+  static add_order(String first,String last,String address,String apartment,String city,String country,String emirate,String phone,String details,double sub_total,double shipping, double total,bool is_paid,String discount)async{
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    var request = http.Request('POST', Uri.parse(url+'api/order'));
+    request.body = json.encode({
+      "customer_id": Global.customer!.id,
+      "email":  Global.customer!.email,
+      "apartment": apartment,
+      "firstname": first,
+      "lastname": last,
+      "country": country,
+      "emirate": emirate,
+      "phone": phone,
+      "details": details,
+      "sub_total": sub_total,
+      "shipping": shipping,
+      "total": total,
+      "is_paid": is_paid,
+      "address": city+"/"+address,
+      "discount": discount
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    }
+    else {
+      print(response.reasonPhrase);
+    }
+
   }
   static add_review(int customer_id,int product_id,String text)async{
     var headers = {
@@ -129,6 +164,8 @@ class Api {
 
     if (response.statusCode == 200) {
       var jsonString = await response.stream.bytesToString();
+      // print(jsonString);
+      log(jsonString);
       return ProductData.fromJson(json.decode(jsonString));
     }
     else {
@@ -287,7 +324,7 @@ class Api {
       List<Product> list = <Product>[];
 
       for(int i=0;i<jsonlist.length;i++){
-        list.add(Product.fromJson(json.decode(jsonlist[i])));
+        list.add(Product.fromJson(jsonlist[i]));
       }
       return get_favorite(wishlist, list);
     }
@@ -296,6 +333,36 @@ class Api {
     }
 
   }
+  static Future<List<Product>> getProductsByUnisex(List<Product> wishlist,int id)async{
+
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    var request = http.Request('POST', Uri.parse(url+'api/product_unisex'));
+    request.body = json.encode({
+      "id": id
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      var jsons = await response.stream.bytesToString();
+      var jsonlist = jsonDecode(jsons) as List;
+      print(jsons);
+      List<Product> list = <Product>[];
+
+      for(int i=0;i<jsonlist.length;i++){
+        list.add(Product.fromJson(jsonlist[i]));
+      }
+      return get_favorite(wishlist, list);
+    }
+    else {
+      return <Product>[];
+    }
+
+  }
+
   static List<Product> get_favorite(List<Product> wishlist,List<Product> prods){
 
     for(int i=0 ; i<wishlist.length;i++){

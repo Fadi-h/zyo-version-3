@@ -22,6 +22,8 @@ import 'package:zyo_version_1/view/wishlist.dart';
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
 
+  ScrollController _scrollController = ScrollController();
+
   HomeController homeController = Get.put(HomeController());
   CartController cartController = Get.find();
   String _url = 'https://flutter.dev';
@@ -53,6 +55,9 @@ class Home extends StatelessWidget {
         unselectedItemColor: Colors.black87,
         currentIndex: homeController.select_nav_bar.value,
         onTap: (index) {
+          if(index==0&&homeController.select_nav_bar==0){
+            _scrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+          }
           homeController.last_select_nav_bar.value=homeController.select_nav_bar.value;
             homeController.set_nav_bar(index);
         },
@@ -143,6 +148,7 @@ class Home extends StatelessWidget {
                 height: MediaQuery.of(context).size.height,
                 color: AppColors.main,
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   child: Column(
                     children: [
                       SizedBox(height: MediaQuery.of(context).size.height * 0.12,),
@@ -431,6 +437,7 @@ class Home extends StatelessWidget {
                 )
             ),
             SizedBox(height: 10),
+
           ],
         ),
         // Container(
@@ -534,6 +541,10 @@ class Home extends StatelessWidget {
             ),
           ],
         ),
+        SizedBox(height: 20),
+        _shop_by_age(context),
+        SizedBox(height: 20),
+        _shop_by_unisex(context),
         SizedBox(height: 20),
         Row(
           children: [
@@ -847,6 +858,142 @@ class Home extends StatelessWidget {
         delegate: SearchTextField(suggestion_list: Global.suggestion_list,homeController: homeController));
     homeController.go_to_search_page(result!);
     print(result);
+  }
+  _shop_by_age(BuildContext context){
+    return Column(
+      children: [
+        Row(
+          children: [
+            SizedBox(width: MediaQuery.of(context).size.width*0.035,),
+            Text(
+              App_Localization.of(context)!.translate("shop_by_age"),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 15,),
+        GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 4/5
+        ),
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: homeController.homePage.ages.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: GestureDetector(
+              onTap: (){
+                homeController.go_to_search_page_by_age(homeController.homePage.ages[index]);
+              },
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 4,
+                      child:Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: NetworkImage(homeController.homePage.ages[index].image),
+                            fit: BoxFit.fill
+                          )
+                        ),
+                      )
+
+                  ),
+                  Expanded(
+                      flex: 2,
+                      child:Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        homeController.homePage.ages[index].title,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12
+                        ),
+                      ),
+                    ],
+                  )),
+                ],
+              ),
+            ),
+          );
+        },)
+      ],
+    );
+  }
+  _shop_by_unisex(BuildContext context){
+    return Column(
+      children: [
+        Row(
+          children: [
+            SizedBox(width: MediaQuery.of(context).size.width*0.035,),
+            Text(
+              App_Localization.of(context)!.translate("shop_by_unisex"),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 15,),
+        GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 4/5
+        ),
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: homeController.homePage.unisex.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: GestureDetector(
+                onTap: (){
+                    homeController.go_to_search_page_by_unisex(homeController.homePage.unisex[index]);
+                },
+                child: Column(
+                  children: [
+                    Expanded(
+                        flex: 4,
+                        child:Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey,
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: NetworkImage(homeController.homePage.unisex[index].image),
+                                  fit: BoxFit.fill
+                              )
+                          ),
+                        )
+
+                    ),
+                    Expanded(
+                        flex: 2,
+                        child:Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              homeController.homePage.unisex[index].title,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12
+                              ),
+                            ),
+                          ],
+                        )),
+                  ],
+                ),
+              ),
+            );
+          },)
+      ],
+    );
   }
 }
 

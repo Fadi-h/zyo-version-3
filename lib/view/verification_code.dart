@@ -26,7 +26,9 @@ class VerificatioCode extends StatelessWidget {
                       _header(context),
                       SizedBox(height: 100,),
                       _body(context),
-                      SizedBox(height: 100,),
+                      SizedBox(height: 50,),
+                      Text(App_Localization.of(context)!.translate("check_mail"),style: TextStyle(color: Colors.white,fontSize: 16),),
+                      SizedBox(height: 30,),
                       _submit(context)
                     ],
                   ),

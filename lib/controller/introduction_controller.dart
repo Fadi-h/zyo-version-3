@@ -13,7 +13,7 @@ import 'package:zyo_version_1/view/registation.dart';
 import 'package:zyo_version_1/view/verification_code.dart';
 
 class IntroController extends GetxController {
-  HomePage homePage=HomePage( category: <Category>[], slider: <MySlider>[], comingSoon: <ComingSoon>[],flashSale: <FlashSale>[],home_page_products: <Product>[],new_products: <Product>[]);
+  HomePage homePage=HomePage( category: <Category>[], slider: <MySlider>[], comingSoon: <ComingSoon>[],flashSale: <FlashSale>[],home_page_products: <Product>[],new_products: <Product>[],ages: <Brands>[],unisex: <Brands>[]);
   WishListController wishlistController = Get.put(WishListController());
   CartController cartController = Get.put(CartController());
   List<SubCategory> subCategory = <SubCategory>[];

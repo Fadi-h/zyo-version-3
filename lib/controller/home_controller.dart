@@ -24,7 +24,7 @@ class HomeController extends GetxController {
   RxList<SubCategory> subCategory = <SubCategory>[].obs;
   RxList<Product> products = <Product>[].obs;
   List<FourthSubCategory> forthSubCategory = <FourthSubCategory>[];
-  HomePage homePage=HomePage( category: <Category>[], slider: <MySlider>[], comingSoon: <ComingSoon>[],flashSale: <FlashSale>[],home_page_products: <Product>[],new_products: <Product>[]);
+  HomePage homePage=HomePage( category: <Category>[], slider: <MySlider>[], comingSoon: <ComingSoon>[],flashSale: <FlashSale>[],home_page_products: <Product>[],new_products: <Product>[],ages: <Brands>[],unisex: <Brands>[]);
   var select_nav_bar = 0.obs;
   var last_select_nav_bar = 0.obs;
   var loading = false.obs;
@@ -188,6 +188,39 @@ class HomeController extends GetxController {
     });
 
   }
+  go_to_search_page_by_age(Brands brands){
+    Api.check_internet().then((net) {
+      if(net){
+        loading.value=true;
+        Api.getProductsByBrand(wishlistController.wishlist,brands.id).then((value) {
+          Get.to(()=>SubCategoryView(brands.title,value.obs));
+          loading.value=false;
+        });
+      }else{
+        Get.to(NoInternet())!.then((value) {
+          go_to_search_page_by_age(brands);
+        });
+      }
+    });
+
+  }
+
+  go_to_search_page_by_unisex(Brands brands){
+    Api.check_internet().then((net) {
+      if(net){
+        loading.value=true;
+        Api.getProductsByUnisex(wishlistController.wishlist,brands.id).then((value) {
+          Get.to(()=>SubCategoryView(brands.title,value.obs));
+          loading.value=false;
+        });
+      }else{
+        Get.to(NoInternet())!.then((value) {
+          go_to_search_page_by_age(brands);
+        });
+      }
+    });
+
+  }
   DateTime? currentBackPressTime;
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
@@ -202,7 +235,6 @@ class HomeController extends GetxController {
   }
 
   go_to_search_page_with_loading(String query){
-
     Api.check_internet().then((net) {
       if(net){
         loading.value=true;

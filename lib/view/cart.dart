@@ -5,6 +5,8 @@ import 'package:zyo_version_1/const/app_colors.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
 import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/controller/cart_controller.dart';
+import 'package:zyo_version_1/view/checkout_choise.dart';
+import 'package:zyo_version_1/view/registation.dart';
 
 class Cart extends StatelessWidget {
   Cart({Key? key}) : super(key: key);
@@ -655,7 +657,11 @@ class Cart extends StatelessWidget {
   _footer(BuildContext context) {
     return GestureDetector(
       onTap: () {
-
+        if(Global.customer==null){
+          Get.to(()=>Registration());
+        }else if(cartController.my_order.isNotEmpty){
+          Get.to(()=>CheckoutChoise());
+        }
       },
       child: Container(
         color: Colors.white,

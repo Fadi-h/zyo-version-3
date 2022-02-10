@@ -1,17 +1,15 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zyo_version_1/const/api.dart';
 import 'package:zyo_version_1/const/app.dart';
 import 'package:zyo_version_1/const/app_localization.dart';
 import 'package:zyo_version_1/const/global.dart';
-import 'package:zyo_version_1/controller/cart_controller.dart';
-import 'package:zyo_version_1/model/my_order.dart';
-import 'package:zyo_version_1/view/home.dart';
+import 'package:zyo_version_1/const/store.dart';
+import 'package:zyo_version_1/model/address.dart';
+import 'package:zyo_version_1/view/order_confirmed.dart';
 
-class CheckoutController extends GetxController{
-
-
-  CartController cartController = Get.find();
+class AddressController extends GetxController {
 
   TextEditingController first_name = TextEditingController();
   TextEditingController last_name = TextEditingController();
@@ -26,6 +24,7 @@ class CheckoutController extends GetxController{
   String phone_code="+971";
   var validate = false.obs;
   var isSwitched = false.obs;
+
 
   @override
   void onInit() {
@@ -43,18 +42,11 @@ class CheckoutController extends GetxController{
     super.onInit();
   }
 
-  add_order(BuildContext context){
-    Api.add_order(Global.customer!.firstname, Global.customer!.lastname, address1.text, address2.text, city.text, country, state.text, phone_code+phone.text,get_details(cartController.my_order.value), double.parse(cartController.sub_total.value), double.parse(cartController.shipping.value), double.parse(cartController.total.value), false,cartController.coupon.toString());
-    cartController.clear_cart();
-    App.sucss_msg(context, App_Localization.of(context)!.translate("s_order"));
-    Get.offAll(()=>Home());
+  save(BuildContext context) {
+    Store.save_address(Address(city: city.text, state: state.text, address1: address1.text, address2: address2.text, country: country, phone: phone.text,country_code: country_code,phone_code: phone_code,phone_init: phone_init));
+    App.sucss_msg(context, App_Localization.of(context)!.translate("address_saved"));
+    Get.back();
+    Get.back();
   }
 
-  String get_details(List<MyOrder> my_order){
-    String text="";
-    for(int i=0;i<my_order.length;i++){
-      text+=my_order[i].product.value.title+" X "+my_order[i].quantity.value.toString()+" X "+my_order[i].product.value.cart_details+"\n";
-    }
-    return text;
-  }
 }

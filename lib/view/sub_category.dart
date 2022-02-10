@@ -40,7 +40,15 @@ class SubCategoryView extends StatelessWidget {
                   child: Column(
                     children: [
                       _header(context),
-                      _body(context)
+                      products.isEmpty?
+                          Column(
+                            children: [
+                              Icon(Icons.info,color: Colors.white,size: 50,),
+                              SizedBox(height: 10,),
+                              Text(App_Localization.of(context)!.translate("no_content"),style: TextStyle(color: Colors.white,fontSize: 18),)
+                            ],
+                          )
+                          :_body(context)
                     ],
                   ),
                 ),
