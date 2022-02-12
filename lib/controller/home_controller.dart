@@ -139,17 +139,17 @@ class HomeController extends GetxController {
 
   }
 
-  go_to_product_page(int id){
+  go_to_product_page(int id,String tag){
     Api.check_internet().then((net) {
       if(net){
         loading.value=true;
         Api.get_product_info(id).then((value) {
-          Get.to(()=>ProductInfo(value!));
+          Get.to(()=>ProductInfo(value!,tag));
           loading.value=false;
         });
       }else{
         Get.to(NoInternet())!.then((value) {
-          go_to_product_page(id);
+          go_to_product_page(id,tag);
         });
       }
     });

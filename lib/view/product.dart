@@ -16,17 +16,19 @@ import 'package:zyo_version_1/controller/product_controller.dart';
 import 'package:zyo_version_1/controller/wishlist_controller.dart';
 import 'package:zyo_version_1/model/product.dart';
 import 'package:zyo_version_1/view/cart.dart';
+import 'package:zyo_version_1/view/content_page.dart';
 import 'package:zyo_version_1/view/no_internet.dart';
 import 'package:zyo_version_1/view/registation.dart';
 
 class ProductInfo extends StatelessWidget {
   ProductData product_data;
+  String tag;
 
 
   ProductController productController = Get.put(ProductController());
   WishListController wishListController = Get.find();
   CartController cartController = Get.find();
-  ProductInfo(this.product_data){
+  ProductInfo(this.product_data,this.tag){
     for(int i=0;i<wishListController.wishlist.length;i++){
       if(wishListController.wishlist[i].id==product_data.product.id){
         product_data.product.favorite.value=true;
@@ -268,92 +270,95 @@ class ProductInfo extends StatelessWidget {
     );
   }
   _slider_images(BuildContext context) {
-    return Stack(
-      children: [
-        CarouselSlider.builder(
-          carouselController: productController.controller,
-          options: CarouselOptions(
-              height: MediaQuery.of(context).size.height * 0.67,
-              autoPlay: product_data.subProduct.length!=0&&product_data.subProduct[productController.selected_sub_product.value].images.length!=0
-                  ? true
-                  : false,
-              viewportFraction: 1,
-              autoPlayInterval: Duration(seconds: 3),
-              onPageChanged: (index, reason) {
+    return Hero(
+      tag: this.tag,
+      child: Stack(
+        children: [
+          CarouselSlider.builder(
+            carouselController: productController.controller,
+            options: CarouselOptions(
+                height: MediaQuery.of(context).size.height * 0.67,
+                autoPlay: product_data.subProduct.length!=0&&product_data.subProduct[productController.selected_sub_product.value].images.length!=0
+                    ? true
+                    : false,
+                viewportFraction: 1,
+                autoPlayInterval: Duration(seconds: 3),
+                onPageChanged: (index, reason) {
 
-                productController.set_index(index);
-              }),
+                  productController.set_index(index);
+                }),
 
-          itemCount: product_data.subProduct.length!=0&&product_data.subProduct[productController.selected_sub_product.value].images.length!=0
-              ?product_data.subProduct[productController.selected_sub_product.value].images.length:1,
-          itemBuilder: (BuildContext context,
-              int index, int realIndex) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-              width: MediaQuery.of(context).size.width,
-              decoration:BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                        product_data.subProduct.length!=0&&product_data.subProduct[productController.selected_sub_product.value].images[index]!=0
-                        ?product_data.subProduct[productController.selected_sub_product.value].images[index].link.replaceAll("localhost", "10.0.2.2")
-                        :product_data.product.image
-                    ),
-                    fit: BoxFit.fill,
-                  )),
-            );
-          },
-        ),
-        Positioned(
-          bottom: 20,
-          left: 5,
-          right: 5,
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-               SizedBox(width: 50),
-                Column(
-                  children: [
-                    product_data.subProduct.isNotEmpty&&product_data.subProduct[productController.selected_sub_product.value].images.isNotEmpty?Container(
-                      width: 80,
-                      height: 30,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.6),
-                          borderRadius: BorderRadius.all(Radius.circular(30))
+            itemCount: product_data.subProduct.length!=0&&product_data.subProduct[productController.selected_sub_product.value].images.length!=0
+                ?product_data.subProduct[productController.selected_sub_product.value].images.length:1,
+            itemBuilder: (BuildContext context,
+                int index, int realIndex) {
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width,
+                decoration:BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                          product_data.subProduct.length!=0&&product_data.subProduct[productController.selected_sub_product.value].images[index]!=0
+                          ?product_data.subProduct[productController.selected_sub_product.value].images[index].link.replaceAll("localhost", "10.0.2.2")
+                          :product_data.product.image
                       ),
-                      child: product_data.subProduct.isNotEmpty&&product_data.subProduct[productController.selected_sub_product.value].images.isNotEmpty?Center(
-                          child: Text(
-                            (productController.activeIndex.value+1).toString()+
-                                "/" +
-                                product_data.subProduct[productController.selected_sub_product.value].images.length.toString(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold
-                            ),)
-                      ):Center(),
-                    ):Center(),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Row(
+                      fit: BoxFit.fill,
+                    )),
+              );
+            },
+          ),
+          Positioned(
+            bottom: 20,
+            left: 5,
+            right: 5,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                 SizedBox(width: 50),
+                  Column(
                     children: [
-                      Icon(Icons.favorite, color: Colors.red,size: 30,),
-                      SizedBox(width: 7,),
-                      Text(product_data.product.likes.value.toString(),
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 15
-                        ),),
+                      product_data.subProduct.isNotEmpty&&product_data.subProduct[productController.selected_sub_product.value].images.isNotEmpty?Container(
+                        width: 80,
+                        height: 30,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(0.6),
+                            borderRadius: BorderRadius.all(Radius.circular(30))
+                        ),
+                        child: product_data.subProduct.isNotEmpty&&product_data.subProduct[productController.selected_sub_product.value].images.isNotEmpty?Center(
+                            child: Text(
+                              (productController.activeIndex.value+1).toString()+
+                                  "/" +
+                                  product_data.subProduct[productController.selected_sub_product.value].images.length.toString(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                              ),)
+                        ):Center(),
+                      ):Center(),
                     ],
                   ),
-                )
-              ],
-            ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.favorite, color: Colors.red,size: 30,),
+                        SizedBox(width: 7,),
+                        Text(product_data.product.likes.value.toString(),
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 15
+                          ),),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
           )
-        )
-      ],
+        ],
+      ),
     );
   }
   _price_and_rating(Product product, BuildContext context) {
@@ -456,7 +461,7 @@ class ProductInfo extends StatelessWidget {
           ),
           GestureDetector(
            onTap: () {
-             //todo something
+             Get.to(()=>ContentPage(App_Localization.of(context)!.translate("return_police"), App_Localization.of(context)!.translate("return_policy_content")));
             },
            child:  Container(
              child: Row(

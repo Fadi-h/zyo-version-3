@@ -40,15 +40,15 @@ class SubCategoryView extends StatelessWidget {
                   child: Column(
                     children: [
                       _header(context),
-                      products.isEmpty?
-                          Column(
-                            children: [
-                              Icon(Icons.info,color: Colors.white,size: 50,),
-                              SizedBox(height: 10,),
-                              Text(App_Localization.of(context)!.translate("no_content"),style: TextStyle(color: Colors.white,fontSize: 18),)
-                            ],
-                          )
-                          :_body(context)
+                      Hero(tag:  "sub_category_tag"+title, child: products.isEmpty?
+                      Column(
+                        children: [
+                          Icon(Icons.info,color: Colors.white,size: 50,),
+                          SizedBox(height: 10,),
+                          Text(App_Localization.of(context)!.translate("no_content"),style: TextStyle(color: Colors.white,fontSize: 18),)
+                        ],
+                      )
+                          :_body(context))
                     ],
                   ),
                 ),
@@ -73,107 +73,90 @@ class SubCategoryView extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.93,
 
       height: MediaQuery.of(context).size.height * 0.12,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-        Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      GestureDetector(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.white,
-                            size: 20,
-                          )
-                      )
-                    ],
-                  ),
-                  SizedBox(width: 5),
-                  Column(
-                    children: [
-                      GestureDetector(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+
+                Row(
+                  children: [
+                    GestureDetector(
                         onTap: () {
                           Get.back();
                         },
-                        child: Text(title,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18
-                            )),
-                      )
-                    ],
-                  ),
-                ],
-              )
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                children: [
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                          size: 20,
+                        )
+                    ),
+                    SizedBox(width: 5),
 
-                  IconButton(
-                      icon: const Icon(Icons.search,
-                          color: Colors.white),
-                      onPressed: () => _pressed_on_search(context)
-                  ),
-                  Stack(
-                    children: [
-                      Column(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(()=>Cart());
-                            },
-                            child: Container(
-                                height: 45,
-                                width: 20,
-                                child: Icon(Icons.shopping_bag_outlined,color: Colors.white,)),
-                          ),
-                        ],
-                      ),
-                      Positioned(
-                          top: 25,
-                          child: cartController.my_order.length==0?Center():Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: Center(
-                              child: Text(cartController.my_order.length.toString(),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 7,
-                                    fontWeight: FontWeight.bold
-                                ),),
-                            ),
-                          ))
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
-        ],
-      ),
-          Divider(
-            thickness: 2,
-            color: AppColors.main2,
-          )
-        ],
+                    GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Text(title,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18
+                          )),
+                    )
+
+                  ],
+                ),
+                Row(
+                  children: [
+
+                    IconButton(
+                        icon: const Icon(Icons.search,
+                            color: Colors.white),
+                        onPressed: () => _pressed_on_search(context)
+                    ),
+                    Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(()=>Cart());
+                          },
+                          child: Container(
+                              height: 45,
+                              width: 20,
+                              child: Icon(Icons.shopping_bag_outlined,color: Colors.white,)),
+                        ),
+                        Positioned(
+                            top: 25,
+                            child: cartController.my_order.length==0?Center():Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10)
+                              ),
+                              child: Center(
+                                child: Text(cartController.my_order.length.toString(),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 7,
+                                      fontWeight: FontWeight.bold
+                                  ),),
+                              ),
+                            ))
+                      ],
+                    )
+                  ],
+                )
+              ],
+            ),
+            Divider(
+              thickness: 2,
+              color: AppColors.main2,
+            )
+          ],
+        ),
       ),
     );
   }
@@ -204,7 +187,7 @@ class SubCategoryView extends StatelessWidget {
             flex: 7,
             child: GestureDetector(
               onTap: () {
-                homeController.go_to_product_page(subCategoryController.products[index].id);
+                homeController.go_to_product_page(subCategoryController.products[index].id,"product_tag"+subCategoryController.products[index].id.toString()+"subcategorypage");
               },
               child: Container(
                 height: 250,

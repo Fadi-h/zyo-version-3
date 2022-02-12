@@ -8,10 +8,24 @@ class LanguagesController extends GetxController {
   List languages = [
     {
       "name":"English",
-      "id":"en"},
+      "id":"en"
+    },
     {
-      "name":"Arabic",
-      "id":"ar"}
+      "name":"العربية",
+      "id":"ar"
+    },
+    {
+      "name":"русский",
+      "id":"ru"
+    },
+    {
+      "name":"हिन्दी",
+      "id":"hi"
+    },
+    {
+      "name":"Türkçe",
+      "id":"tr"
+    }
    ].obs;
 
 }

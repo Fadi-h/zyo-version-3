@@ -382,17 +382,20 @@ class Categories extends StatelessWidget {
     );
   }
   _products(BuildContext context , int index) {
-    return GestureDetector(
-      onTap: () {
-       //Get.to(()=>ProductInfo(homeController.products[index]));
-        homeController.go_to_product_page(homeController.products.value[index].id);
-      },
-      child:  Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          image: DecorationImage(
-            fit: BoxFit.fill,
-            image: NetworkImage(homeController.products[index].image.toString().replaceAll("localhost", "10.0.2.2")),
+    return Hero(
+      tag: "product_tag"+homeController.products[index].id.toString()+"categorypage",
+      child: GestureDetector(
+        onTap: () {
+         //Get.to(()=>ProductInfo(homeController.products[index]));
+          homeController.go_to_product_page(homeController.products.value[index].id,"product_tag"+homeController.products[index].id.toString()+"categorypage");
+        },
+        child:  Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: NetworkImage(homeController.products[index].image.toString().replaceAll("localhost", "10.0.2.2")),
+            ),
           ),
         ),
       ),

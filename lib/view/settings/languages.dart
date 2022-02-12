@@ -10,8 +10,16 @@ class Languages extends StatelessWidget {
     if(Global.language_code == "en") {
       languagesController.select_value.value = 0;
     }
-    else {
+    else if(Global.language_code == "ar"){
       languagesController.select_value.value = 1;
+    }
+    else if(Global.language_code == "ru"){
+      languagesController.select_value.value = 2;
+    }
+    else if(Global.language_code == "hi"){
+      languagesController.select_value.value = 3;
+    }else{
+      languagesController.select_value.value = 4;
     }
   }
 
@@ -87,7 +95,8 @@ class Languages extends StatelessWidget {
             itemBuilder: (context,index) {
               return Obx(()=> GestureDetector(
                 onTap: () {
-                  Global.set_language(context, languagesController.languages[index]['id']);
+                  print(languagesController.languages[index]['id']);
+                      Global.set_language(context, languagesController.languages[index]['id']);
                   languagesController.select_value.value = index;
                   if(languagesController.languages[index]['id'] == "en" ) {
                     languagesController.value = languagesController.languages[index]["name"];
@@ -107,9 +116,7 @@ class Languages extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            languagesController.languages[index]['id'] == "en"?
-                            App_Localization.of(context)!.translate("english") :
-                            App_Localization.of(context)!.translate("arabic"),
+                            languagesController.languages[index]['name'],
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18

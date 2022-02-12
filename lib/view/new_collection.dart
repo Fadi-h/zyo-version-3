@@ -223,50 +223,53 @@ class NewCollection extends StatelessWidget {
             ),
             itemCount: homeController.homePage.new_products.length,
             itemBuilder: (BuildContext ctx, index) {
-              return GestureDetector(
-                onTap: (){
-                  homeController.go_to_product_page(homeController.homePage.new_products[index].id);
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          image: DecorationImage(
-                              image: NetworkImage(
-                                  homeController.homePage.new_products[index].image.toString()
-                              ),
-                              fit: BoxFit.cover
-                          ),
-                        ),
-
-                      ),),
-                    Expanded(
-                        flex:1,
-                        child:Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text(( homeController.homePage.new_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
-                              ),),
-                            Text(( homeController.homePage.new_products[index].title),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                              ),
-                              maxLines: 2,
+              return Hero(
+                tag: "product_tag"+homeController.homePage.new_products[index].id.toString()+"newcollections",
+                child: GestureDetector(
+                  onTap: (){
+                    homeController.go_to_product_page(homeController.homePage.new_products[index].id,"product_tag"+homeController.homePage.new_products[index].id.toString()+"newcollections");
+                  },
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          height: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    homeController.homePage.new_products[index].image.toString()
+                                ),
+                                fit: BoxFit.cover
                             ),
-                          ],
-                        )
-                    )
-                  ],
+                          ),
+
+                        ),),
+                      Expanded(
+                          flex:1,
+                          child:Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(( homeController.homePage.new_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold
+                                ),),
+                              Text(( homeController.homePage.new_products[index].title),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                                maxLines: 2,
+                              ),
+                            ],
+                          )
+                      )
+                    ],
+                  ),
                 ),
               );
             }),

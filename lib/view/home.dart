@@ -302,32 +302,37 @@ class Home extends StatelessWidget {
       children: [
         CarouselSlider(
           items: homeController.homePage.slider.map((e){
-            return GestureDetector(
-              onTap: (){
-                homeController.go_to_product_page(e.productId);
-              },
-              child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height:
-                  MediaQuery.of(context).size.width * 0.3,
-                  decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(10),
-                    // image: DecorationImage(
-                    //     image: CachedNetworkImageProvider(e.image),
-                    //     fit: BoxFit.cover)
-                  ),
-                  child: CachedNetworkImage(
-                    // placeholder: (context, url) => const CircularProgressIndicator(),
-                    imageUrl: e.image.replaceAll("localhost", "10.0.2.2"),
-                    imageBuilder: (context, imageProvider) => Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.fill,
+            return Hero(
+              tag: "product_tag"+e.productId.toString()+"slider",
+              child: GestureDetector(
+                onTap: (){
+                  homeController.go_to_product_page(e.productId,"product_tag"+e.productId.toString()+"slider");
+                },
+                child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height:
+                    MediaQuery.of(context).size.width * 0.3,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      // borderRadius: BorderRadius.circular(10),
+                      // image: DecorationImage(
+                      //     image: CachedNetworkImageProvider(e.image),
+                      //     fit: BoxFit.cover)
+                    ),
+                    child: CachedNetworkImage(
+                      // placeholder: (context, url) => const CircularProgressIndicator(),
+                      imageUrl: e.image.replaceAll("localhost", "10.0.2.2"),
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.fill,
+                          ),
                         ),
                       ),
-                    ),
-                  )
+                    )
+                ),
               ),
             );
           }).toList(),
@@ -440,69 +445,7 @@ class Home extends StatelessWidget {
 
           ],
         ),
-        // Container(
-        //   width: MediaQuery.of(context).size.width,
-        //   height: MediaQuery.of(context).size.height * 0.25,
-        //   decoration: BoxDecoration(
-        //       image: DecorationImage(
-        //           image: AssetImage("assets/home/home3.png"),
-        //           fit: BoxFit.cover
-        //       )
-        //   ),
-        //   child:  Padding(
-        //     padding: const EdgeInsets.only(right: 10),
-        //     child: Align(
-        //       alignment: Alignment.centerRight,
-        //       child: Column(
-        //         mainAxisAlignment: MainAxisAlignment.center,
-        //         children: [
-        //           Container(
-        //             child: Text("CYPER MONDAY",
-        //                 style: TextStyle(
-        //                     color: Colors.white,
-        //                     fontWeight: FontWeight.bold,
-        //                     fontSize: 25
-        //                 )
-        //             ),
-        //           ),
-        //           Container(
-        //             child: Text("Shopping Guide",
-        //                 style: TextStyle(
-        //                     color: Colors.white,
-        //                     fontSize: 15
-        //                 )
-        //             ),
-        //           ),
-        //           Container(
-        //             child: Text("Games, prizes, and more you don't wanto miss!",
-        //                 style: TextStyle(
-        //                     color: Colors.white,
-        //                     fontSize: 10
-        //                 )
-        //             ),
-        //           ),
-        //           SizedBox(height: 10,),
-        //           GestureDetector(
-        //             onTap: () {
-        //               //todo something
-        //             },
-        //             child: Container(
-        //               width: MediaQuery.of(context).size.width * 0.3,
-        //               height: MediaQuery.of(context).size.height * 0.04,
-        //               decoration: BoxDecoration(
-        //                   color: Colors.white,
-        //                   borderRadius: BorderRadius.all(Radius.circular(50))
-        //               ),
-        //               child: Center(
-        //                 child: Text(App_Localization.of(context)!.translate("view_more")),
-        //               ),
-        //             ),
-        //           )
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // ),
+
         Column(
           children: [
             Container(
@@ -566,24 +509,27 @@ class Home extends StatelessWidget {
             crossAxisSpacing: 0,
             childAspectRatio: 7/9
           ), itemBuilder: (context,index){
-            return GestureDetector(
-              onTap: (){
-                homeController.go_to_product_page(homeController.homePage.comingSoon[index].id);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.black,
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.4), BlendMode.dstATop),
-                      fit: BoxFit.fill,
-                      image: NetworkImage(homeController.homePage.comingSoon[index].image),
-                    )
+            return Hero(
+              tag: "product_tag"+homeController.homePage.comingSoon[index].id.toString()+"commingsoon",
+              child: GestureDetector(
+                onTap: (){
+                  homeController.go_to_product_page(homeController.homePage.comingSoon[index].id,"product_tag"+homeController.homePage.comingSoon[index].id.toString()+"commingsoon");
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                      borderRadius: BorderRadius.circular(15),
+                      image: DecorationImage(
+                        colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.4), BlendMode.dstATop),
+                        fit: BoxFit.fill,
+                        image: NetworkImage(homeController.homePage.comingSoon[index].image),
+                      )
+                    ),
+
+
                   ),
-
-
                 ),
               ),
             );
@@ -665,22 +611,25 @@ class Home extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.25,
             child: Column(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    homeController.go_to_sub_category_page(subCategory);
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white , width: 2),
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                        image: DecorationImage(
-                            image: NetworkImage(
-                              subCategory.image.toString().replaceAll("localhost", "10.0.2.2")),
-                          fit: BoxFit.fill
-                        )
+                Hero(
+                  tag: "sub_category_tag"+subCategory.title,
+                  child: GestureDetector(
+                    onTap: () {
+                      homeController.go_to_sub_category_page(subCategory);
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white , width: 2),
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                subCategory.image.toString().replaceAll("localhost", "10.0.2.2")),
+                            fit: BoxFit.fill
+                          )
+                      ),
                     ),
                   ),
                 ),
@@ -708,60 +657,64 @@ class Home extends StatelessWidget {
     );
   }
   _flash_sale(BuildContext context, int index) {
-    return Column(
-      children: [
-        Container(
-          child: GestureDetector(
-            onTap: () {
-              homeController.go_to_product_page( homeController.homePage.flashSale[index].id);
-            },
-            child: Stack(
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  height: MediaQuery.of(context).size.height * 0.15,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: NetworkImage(
-                            homeController.homePage.flashSale[index].image.replaceAll("localhost", "10.0.2.2"),)
-                      )
+    return Hero(
+      tag: "product_tag"+homeController.homePage.flashSale[index].id.toString()+"flashsale",
+      child: Column(
+        children: [
+          Container(
+            child: GestureDetector(
+              onTap: () {
+                homeController.go_to_product_page(homeController.homePage.flashSale[index].id,"product_tag"+homeController.homePage.flashSale[index].id.toString()+"flashsale");
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                        image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: NetworkImage(
+                              homeController.homePage.flashSale[index].image.replaceAll("localhost", "10.0.2.2"),)
+                        )
+                    ),
                   ),
-                ),
-                SvgPicture.asset("assets/icons/flash_sale.svg")
-              ],
+                  SvgPicture.asset("assets/icons/flash_sale.svg")
+                ],
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 8),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.25,
-          child: Text((homeController.homePage.flashSale[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 15
-            ),),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.25,
-          child: Text( (homeController.homePage.flashSale[index].oldPrice*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
-            style: TextStyle(
-                decorationColor: Colors.white,
-                decoration: TextDecoration.lineThrough,
-                color: AppColors.main2,
-                fontSize: 13
-            ),),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.25,
-          child: Text( homeController.homePage.flashSale[index].title,
-            style: TextStyle(
-                decorationColor: Colors.white,
-                color: AppColors.main2,
-                fontSize: 12
-            ),maxLines: 2,),
-        )
-      ],
+          SizedBox(height: 8),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.25,
+            child: Text((homeController.homePage.flashSale[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15
+              ),),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.25,
+            child: Text( (homeController.homePage.flashSale[index].oldPrice*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
+              style: TextStyle(
+                  decorationColor: Colors.white,
+                  decoration: TextDecoration.lineThrough,
+                  color: AppColors.main2,
+                  fontSize: 13
+              ),),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.25,
+            child: Text( homeController.homePage.flashSale[index].title,
+              style: TextStyle(
+                  decorationColor: Colors.white,
+                  color: AppColors.main2,
+                  fontSize: 12
+              ),maxLines: 2,),
+          )
+        ],
+      ),
     );
   }
   _products(BuildContext context) {
@@ -787,69 +740,73 @@ class Home extends StatelessWidget {
     );
   }
   _list_products(BuildContext context, int index) {
-    return Column(
-      children: [
-        Expanded(
-          flex: 3,
-          child:GestureDetector(
-            onTap: () {
-              homeController.go_to_product_page(homeController.homePage.home_page_products[index].id);
-             },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-                image: DecorationImage(
-                    image: NetworkImage(homeController.homePage.home_page_products[index].image.toString().replaceAll("localhost", "10.0.2.2")),
-                    fit: BoxFit.fill
-                ),
-              ),
-              // child: Padding(
-              //   padding: const EdgeInsets.all(5),
-              //   child: Align(
-              //       alignment: Alignment.bottomRight,
-              //       child: Obx(() => GestureDetector(
-              //         onTap: () {
-              //           homeController.wishlistIcon.value = !homeController.wishlistIcon.value;
-              //         },
-              //         child: homeController.wishlistIcon.value
-              //             ? Icon(
-              //           Icons.favorite_border,
-              //           color: Colors.white,
-              //           size: 25,
-              //         )
-              //             : Icon(
-              //           Icons.favorite_outlined,
-              //           color: AppColors.main,
-              //           size: 25,
-              //         ),
-              //       ))
-              //   ),
-              // ),
-            ),
-          ),),
-        Expanded(
-            flex:1,
-            child:Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text((homeController.homePage.home_page_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                    fontWeight: FontWeight.bold
-                  ),),
-                Text((homeController.homePage.home_page_products[index].title),
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
+    return Hero(
+      tag: "product_tag"+homeController.homePage.home_page_products[index].id.toString()+"ourproduct",
+      child: Column(
+        children: [
+          Expanded(
+            flex: 3,
+            child:GestureDetector(
+              onTap: () {
+                homeController.go_to_product_page(homeController.homePage.home_page_products[index].id,"product_tag"+homeController.homePage.home_page_products[index].id.toString()+"ourproduct");
+               },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  image: DecorationImage(
+                      image: NetworkImage(homeController.homePage.home_page_products[index].image.toString().replaceAll("localhost", "10.0.2.2")),
+                      fit: BoxFit.fill
                   ),
-                maxLines: 2,
                 ),
-              ],
-            )
-        )
-      ],
+                // child: Padding(
+                //   padding: const EdgeInsets.all(5),
+                //   child: Align(
+                //       alignment: Alignment.bottomRight,
+                //       child: Obx(() => GestureDetector(
+                //         onTap: () {
+                //           homeController.wishlistIcon.value = !homeController.wishlistIcon.value;
+                //         },
+                //         child: homeController.wishlistIcon.value
+                //             ? Icon(
+                //           Icons.favorite_border,
+                //           color: Colors.white,
+                //           size: 25,
+                //         )
+                //             : Icon(
+                //           Icons.favorite_outlined,
+                //           color: AppColors.main,
+                //           size: 25,
+                //         ),
+                //       ))
+                //   ),
+                // ),
+              ),
+            ),),
+          Expanded(
+              flex:1,
+              child:Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text((homeController.homePage.home_page_products[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                      fontWeight: FontWeight.bold
+                    ),),
+                  Text((homeController.homePage.home_page_products[index].title),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                    ),
+                  maxLines: 2,
+                  ),
+                ],
+              )
+          )
+        ],
+      ),
     );
   }
   _pressed_on_search(BuildContext context) async {
@@ -868,62 +825,67 @@ class Home extends StatelessWidget {
             Text(
               App_Localization.of(context)!.translate("shop_by_age"),
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20
+                  color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold
               ),
             ),
           ],
         ),
         SizedBox(height: 15,),
-        GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 4/5
-        ),
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: homeController.homePage.ages.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: GestureDetector(
-              onTap: (){
-                homeController.go_to_search_page_by_age(homeController.homePage.ages[index]);
-              },
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 4,
-                      child:Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: NetworkImage(homeController.homePage.ages[index].image),
-                            fit: BoxFit.fill
-                          )
-                        ),
-                      )
-
-                  ),
-                  Expanded(
-                      flex: 2,
-                      child:Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        Padding(padding: EdgeInsets.all(10),
+          child: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 4/7,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10
+          ),
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: homeController.homePage.ages.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(0),
+                child: GestureDetector(
+                  onTap: (){
+                    homeController.go_to_search_page_by_age(homeController.homePage.ages[index]);
+                  },
+                  child: Column(
                     children: [
-                      Text(
-                        homeController.homePage.ages[index].title,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12
-                        ),
+                      Expanded(
+                          flex: 3,
+                          child:Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(15),
+                                image: DecorationImage(
+                                    image: NetworkImage(homeController.homePage.ages[index].image),
+                                    fit: BoxFit.fill
+                                )
+                            ),
+                          )
+
                       ),
+                      Expanded(
+                          flex: 1,
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+
+                            children: [
+                              Text(
+                                homeController.homePage.ages[index].title,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          )),
                     ],
-                  )),
-                ],
-              ),
-            ),
-          );
-        },)
+                  ),
+                ),
+              );
+            },),
+        )
       ],
     );
   }
@@ -936,62 +898,67 @@ class Home extends StatelessWidget {
             Text(
               App_Localization.of(context)!.translate("shop_by_unisex"),
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20
+                  color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold
               ),
             ),
           ],
         ),
         SizedBox(height: 15,),
-        GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            childAspectRatio: 4/5
-        ),
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: homeController.homePage.unisex.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: GestureDetector(
-                onTap: (){
-                    homeController.go_to_search_page_by_unisex(homeController.homePage.unisex[index]);
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                        flex: 4,
-                        child:Container(
-                          decoration: BoxDecoration(
-                              color: Colors.grey,
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                  image: NetworkImage(homeController.homePage.unisex[index].image),
-                                  fit: BoxFit.fill
-                              )
-                          ),
-                        )
-
-                    ),
-                    Expanded(
-                        flex: 2,
-                        child:Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text(
-                              homeController.homePage.unisex[index].title,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12
-                              ),
+        Padding(padding: EdgeInsets.all(10),
+          child: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 4/7,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10
+          ),
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: homeController.homePage.unisex.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(0),
+                child: GestureDetector(
+                  onTap: (){
+                    homeController.go_to_search_page_by_age(homeController.homePage.unisex[index]);
+                  },
+                  child: Column(
+                    children: [
+                      Expanded(
+                          flex: 3,
+                          child:Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(15),
+                                image: DecorationImage(
+                                    image: NetworkImage(homeController.homePage.unisex[index].image),
+                                    fit: BoxFit.fill
+                                )
                             ),
-                          ],
-                        )),
-                  ],
+                          )
+
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+
+                            children: [
+                              Text(
+                                homeController.homePage.unisex[index].title,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },)
+              );
+            },),
+        )
       ],
     );
   }

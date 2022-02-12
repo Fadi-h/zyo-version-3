@@ -9,6 +9,7 @@ import 'package:zyo_version_1/const/app_localization.dart';
 import 'package:zyo_version_1/const/store.dart';
 import 'package:zyo_version_1/controller/home_controller.dart';
 import 'package:zyo_version_1/controller/settings_controller.dart';
+import 'package:zyo_version_1/view/content_page.dart';
 import 'package:zyo_version_1/view/introduction.dart';
 import 'package:zyo_version_1/view/no_internet.dart';
 import 'package:zyo_version_1/view/registation.dart';
@@ -290,7 +291,7 @@ class Settings extends StatelessWidget {
             SizedBox(height: 20,),
             GestureDetector(
               onTap: () {
-                //todo something
+                Get.to(()=>ContentPage(App_Localization.of(context)!.translate("about_zyo"), App_Localization.of(context)!.translate("about_us_content")));
               },
               child: Container(
                 color: AppColors.main3,
@@ -451,7 +452,13 @@ class Settings extends StatelessWidget {
                 child: Text(
                     Global.language_code == "en" ?
                     "English" :
-                    "العربية",
+                    Global.language_code == "ar" ?
+                    "العربية":
+                    Global.language_code == "hi" ?
+                    "हिन्दी":
+                    Global.language_code == "ru" ?
+                    "русский"
+                    :"Türkçe",
                     style: TextStyle(
                         color: Colors.grey,
                         fontSize: 16
