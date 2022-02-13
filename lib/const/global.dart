@@ -10,7 +10,7 @@ import 'package:zyo_version_1/model/address.dart';
 class Global {
 
   static String language_code = "en";
-  static List<String> suggestion_list = ["any","asd"];
+  static List<String> suggestion_list = [];
   static MyCustomer? customer;
   static Address? address;
   static int dis_code=0;

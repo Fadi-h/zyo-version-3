@@ -635,7 +635,7 @@ class Home extends StatelessWidget {
                 ),
 
                 Container(
-                  height: 35,
+                  height: 40,
                   child: Column(
                     children: [
                       Text(
@@ -660,6 +660,7 @@ class Home extends StatelessWidget {
     return Hero(
       tag: "product_tag"+homeController.homePage.flashSale[index].id.toString()+"flashsale",
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
             child: GestureDetector(
@@ -670,7 +671,7 @@ class Home extends StatelessWidget {
                 children: [
                   Container(
                     width: MediaQuery.of(context).size.width * 0.25,
-                    height: MediaQuery.of(context).size.height * 0.15,
+                    height: MediaQuery.of(context).size.height * 0.15-5,
                     decoration: BoxDecoration(
                       color: Colors.grey,
                         image: DecorationImage(
@@ -685,7 +686,7 @@ class Home extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8),
+          // SizedBox(height: 8),
           Container(
             width: MediaQuery.of(context).size.width * 0.25,
             child: Text((homeController.homePage.flashSale[index].price*Global.currency_covert).toStringAsFixed(2)+" "+App_Localization.of(context)!.translate(Global.currency_code),

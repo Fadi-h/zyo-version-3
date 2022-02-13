@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:zyo_version_1/const/global.dart';
 import 'package:zyo_version_1/const/store.dart';
 import 'package:zyo_version_1/model/customer.dart';
@@ -65,6 +66,27 @@ class Api {
     }
 
   }
+
+  static get_history()async{
+
+    var request = http.Request('GET', Uri.parse(url+'api/search_history'));
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      var jsonString = await response.stream.bytesToString();
+      var val = json.decode(jsonString);
+      var list = val["history"] as List;
+      for(int i=0;i<list.length;i++){
+        Global.suggestion_list.add(list[i].toString());
+      }
+    }
+    else {
+    print(response.reasonPhrase);
+    }
+
+  }
+
   static add_review(int customer_id,int product_id,String text)async{
     var headers = {
       'Content-Type': 'application/json',

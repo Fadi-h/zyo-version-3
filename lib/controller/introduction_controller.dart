@@ -30,6 +30,7 @@ class IntroController extends GetxController {
 
     Api.check_internet().then((internet) {
       if(internet){
+        Api.get_history();
         Store.load_order().then((value) {
           cartController.my_order.value=value;
           cartController.get_total();
