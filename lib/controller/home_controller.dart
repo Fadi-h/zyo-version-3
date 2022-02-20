@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:zyo_version_1/const/api.dart';
 import 'package:zyo_version_1/controller/introduction_controller.dart';
+import 'package:zyo_version_1/controller/sub_category_controller.dart';
 import 'package:zyo_version_1/controller/wishlist_controller.dart';
 import 'package:zyo_version_1/model/4th_sub_category.dart';
 import 'package:zyo_version_1/model/home_page.dart';
@@ -178,6 +179,30 @@ class HomeController extends GetxController {
         //loading.value=true;
         Api.getProductsSearch(wishlistController.wishlist,query).then((value) {
           Get.to(()=>SubCategoryView(query,value.obs));
+          // loading.value=false;
+        });
+      }else{
+        Get.to(NoInternet())!.then((value) {
+          go_to_search_page(query);
+        });
+      }
+    });
+
+  }
+  go_to_search_page_sub_category(String query){
+    Api.check_internet().then((net) {
+      if(net){
+        loading.value=true;
+        print(query);
+        Api.getProductsSearch(wishlistController.wishlist,query).then((value) {
+          print('***************');
+          SubCategoryController subCategoryController = Get.find();
+          subCategoryController.title=query;
+          subCategoryController.products = value;
+          loading.value=false;
+          Get.back();
+
+          //Get.off(()=>SubCategoryView(query,value.obs));
           // loading.value=false;
         });
       }else{

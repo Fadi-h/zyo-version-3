@@ -69,20 +69,23 @@ class ProductInfo extends StatelessWidget {
               backgroundColor: AppColors.main,
               expandedHeight: MediaQuery.of(context).size.height,
             ),
-            SliverList(delegate: SliverChildListDelegate([
-              Obx(() =>  Container(
-                width: MediaQuery.of(context).size.width,
-                color: AppColors.main,
-                child: Center(
+            Container(
+              child: SliverList(delegate: SliverChildListDelegate.fixed([
+
+                Obx(() =>  Container(
+                  width: MediaQuery.of(context).size.width,
+                  // height: MediaQuery.of(context).size.height*0.8,
+                  color: AppColors.main,
                   child: Column(
                     children: [
-                      productController.selected.value==0 ? _goods(context) : _reviews(context),
-                      _footer(context)
+                       _goods(context) ,
+                      _footer(context),
+                      _reviews(context),
                     ],
                   ),
-                ),
-              ))
-            ]))
+                ))
+              ])),
+            )
           ],
         ),
       )),
@@ -180,7 +183,7 @@ class ProductInfo extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -226,16 +229,18 @@ class ProductInfo extends StatelessWidget {
                 )
                     :GestureDetector(
                   onTap: () {
-                    product_data.product.cart_details="";
-                    if(product_data.subProduct.isNotEmpty){
-                      product_data.product.cart_details=product_data.subProduct[productController.selected_sub_product.value].color;
+                    if(product_data.subProduct[productController.selected_sub_product.value].size.isNotEmpty&&product_data.subProduct[productController.selected_sub_product.value].size.length>productController.select_size.value&&product_data.subProduct[productController.selected_sub_product.value].size[productController.select_size.value].availability!=0){
+                      product_data.product.cart_details="";
+                      if(product_data.subProduct.isNotEmpty){
+                        product_data.product.cart_details=product_data.subProduct[productController.selected_sub_product.value].color;
+                      }
+                      if(product_data.subProduct[productController.selected_sub_product.value].size.isNotEmpty){
+                        product_data.product.cart_details+=":"+product_data.subProduct[productController.selected_sub_product.value].size[productController.select_size.value].title;
+                      }
+                      // product_data.product.cart_details=product_data.subProduct[productController.selected_sub_product.value].color;
+                      cartController.add_to_cart(product_data.product, 1);
+                      App.sucss_msg(context, App_Localization.of(context)!.translate("just_added_to_your_bag"));
                     }
-                    if(product_data.size.isNotEmpty){
-                      product_data.product.cart_details+=":"+product_data.size[productController.select_size.value].title;
-                    }
-                    // product_data.product.cart_details=product_data.subProduct[productController.selected_sub_product.value].color;
-                    cartController.add_to_cart(product_data.product, 1);
-                    App.sucss_msg(context, App_Localization.of(context)!.translate("just_added_to_your_bag"));
                   },
                   child: Container(
                     color: AppColors.main,
@@ -416,37 +421,38 @@ class ProductInfo extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       child: Column(
         children: [
-          _header2(context),
-          _product_image(context),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.15,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(App_Localization.of(context)!.translate("goods"),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        decoration: productController.selected.value==0 ?
-                        TextDecoration.underline : TextDecoration.none
-                    )
-                ),
-                SizedBox(width: 50,),
-                GestureDetector(
-                  onTap: () {
-                    productController.selected.value ++;
-                  },
-                  child: Text(App_Localization.of(context)!.translate("reviews"),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      )
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // _header2(context),
+          // _product_image(context),
+          // Container(
+          //   width: MediaQuery.of(context).size.width,
+          //   height: MediaQuery.of(context).size.height * 0.15,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       Text(App_Localization.of(context)!.translate("goods"),
+          //           style: TextStyle(
+          //               color: Colors.white,
+          //               fontSize: 18,
+          //               decoration: productController.selected.value==0 ?
+          //               TextDecoration.underline : TextDecoration.none
+          //           )
+          //       ),
+          //       SizedBox(width: 50,),
+          //       GestureDetector(
+          //         onTap: () {
+          //           productController.selected.value ++;
+          //         },
+          //         child: Text(App_Localization.of(context)!.translate("reviews"),
+          //             style: TextStyle(
+          //               color: Colors.white,
+          //               fontSize: 18,
+          //             )
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          SizedBox(height: 10),
           _title2(product_data.product,context),
           SizedBox(height: 10),
           _price_and_rating(product_data.product,context),
@@ -662,10 +668,15 @@ class ProductInfo extends StatelessWidget {
         height: 20,
         width: 20,
         decoration: BoxDecoration(
-            color: hexToColor(product_data.subProduct[index].degree), //this is the important line
+            color: product_data.subProduct[index].degree.startsWith("#")?hexToColor(product_data.subProduct[index].degree):Colors.white, //this is the important line
             borderRadius: BorderRadius.all(Radius.circular(30)),
+            image:product_data.subProduct[index].degree.startsWith("#")?null: DecorationImage(
+              image: NetworkImage(product_data.subProduct[index].degree),
+              fit: BoxFit.fill
+            ),
             border: Border.all(color: productController.selected_sub_product == index.obs ?
-            Colors.white : Colors.transparent , width: 2
+            Colors.white : Colors.transparent , width: 2,
+
             ),
           boxShadow: [
             BoxShadow(
@@ -684,7 +695,7 @@ class ProductInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          product_data.size.isEmpty?Center():Text(App_Localization.of(context)!.translate("size"),
+          product_data.subProduct[productController.selected_sub_product.value].size.isEmpty?Center():Text(App_Localization.of(context)!.translate("size"),
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -696,7 +707,7 @@ class ProductInfo extends StatelessWidget {
             child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount:  product_data.size.length,
+                itemCount:  product_data.subProduct[productController.selected_sub_product.value].size.length,
                 itemBuilder: (context, index) {
                   return Row(
                     children: [
@@ -720,13 +731,16 @@ class ProductInfo extends StatelessWidget {
         decoration: BoxDecoration(
            // color: Colors.red, //this is the important line
             borderRadius: BorderRadius.all(Radius.circular(25)),
-            border: Border.all(color: productController.select_size == index.obs ?
+            border: Border.all(color:
+            product_data.subProduct[productController.selected_sub_product.value].size[index].availability==0
+                ?Colors.red
+                : productController.select_size == index.obs ?
             Colors.white : Colors.white24 , width: 2
             )
         ),
         child: Center(
           child: Text(
-           product_data.size[index].title,
+           product_data.subProduct[productController.select_color.value].size[index].title,
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -772,13 +786,13 @@ class ProductInfo extends StatelessWidget {
     );
   }
   _size_information(BuildContext context) {
-    return product_data.size.isEmpty?Center():Container(
+    return product_data.subProduct[productController.select_color.value].size.isEmpty?Center():Container(
       width: MediaQuery.of(context).size.width * 0.93,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(product_data.size[productController.select_size.value].details,style: TextStyle(color: Colors.white),)
+          Text(product_data.subProduct[productController.select_color.value].size[productController.select_size.value].details,style: TextStyle(color: Colors.white),)
         ],
       ),
     );
@@ -788,39 +802,39 @@ class ProductInfo extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.93,
       child: Column(
         children: [
-          _header2(context),
-          _product_image(context),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.15,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    productController.selected.value --;
-                  },
-                  child: Text(App_Localization.of(context)!.translate("goods"),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          decoration: productController.selected.value==0 ?
-                          TextDecoration.underline : TextDecoration.none
-                      )
-                  ),
-                ),
-                SizedBox(width: 50),
-                Text(App_Localization.of(context)!.translate("reviews"),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        decoration: productController.selected.value==1 ?
-                        TextDecoration.underline : TextDecoration.none
-                    )
-                ),
-              ],
-            ),
-          ),
+          // _header2(context),
+          // _product_image(context),
+          // Container(
+          //   width: MediaQuery.of(context).size.width,
+          //   height: MediaQuery.of(context).size.height * 0.15,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       GestureDetector(
+          //         onTap: () {
+          //           productController.selected.value --;
+          //         },
+          //         child: Text(App_Localization.of(context)!.translate("goods"),
+          //             style: TextStyle(
+          //                 color: Colors.white,
+          //                 fontSize: 18,
+          //                 decoration: productController.selected.value==0 ?
+          //                 TextDecoration.underline : TextDecoration.none
+          //             )
+          //         ),
+          //       ),
+          //       SizedBox(width: 50),
+          //       Text(App_Localization.of(context)!.translate("reviews"),
+          //           style: TextStyle(
+          //               color: Colors.white,
+          //               fontSize: 18,
+          //               decoration: productController.selected.value==1 ?
+          //               TextDecoration.underline : TextDecoration.none
+          //           )
+          //       ),
+          //     ],
+          //   ),
+          // ),
           _review_detail(context),
         ],
       ),
@@ -881,6 +895,7 @@ class ProductInfo extends StatelessWidget {
             height: 50,
             child: TextField(
               controller: productController.review_controller,
+              textAlignVertical: TextAlignVertical.bottom,
               decoration: InputDecoration(
                hintText: App_Localization.of(context)!.translate("add_yours"),
                 hintStyle: TextStyle(color: Colors.white),
@@ -899,36 +914,40 @@ class ProductInfo extends StatelessWidget {
             ),
           ),
 
-          GestureDetector(
-            onTap: (){
-              if(Global.customer==null){
-                Get.offAll(Registration());
-              }else{
-                if(productController.review_controller.text.isNotEmpty){
-                  productController.loading.value=true;
-                  Api.check_internet().then((net) {
-                    if(net){
-                      Api.add_review(Global.customer!.id, product_data.product.id, productController.review_controller.text);
-                      List<Review> reviews = <Review>[];
-                      reviews.add(Review(id: -1, priductId: product_data.product.id, customerId: Global.customer!.id, body: productController.review_controller.text, customer: Global.customer!.firstname));
-                      reviews.addAll(product_data.review);
-                      product_data.review.clear();
-                      product_data.review.addAll(reviews);
-                      productController.review_controller.clear();
-                      productController.loading.value=false;
-                    }else{
-                      Get.to(NoInternet())!.then((value) {
-                        Api.add_review(Global.customer!.id, product_data.product.id, productController.review_controller.text);
+          Container(
+            width: MediaQuery.of(context).size.width*0.2,
+            child: Center(
+              child: GestureDetector(
+                onTap: (){
+                  if(Global.customer==null){
+                    Get.offAll(Registration());
+                  }else{
+                    if(productController.review_controller.text.isNotEmpty){
+                      productController.loading.value=true;
+                      Api.check_internet().then((net) {
+                        if(net){
+                          Api.add_review(Global.customer!.id, product_data.product.id, productController.review_controller.text);
+                          List<Review> reviews = <Review>[];
+                          reviews.add(Review(id: -1, priductId: product_data.product.id, customerId: Global.customer!.id, body: productController.review_controller.text, customer: Global.customer!.firstname));
+                          reviews.addAll(product_data.review);
+                          product_data.review.clear();
+                          product_data.review.addAll(reviews);
+                          productController.review_controller.clear();
+                          productController.loading.value=false;
+                        }else{
+                          Get.to(NoInternet())!.then((value) {
+                            Api.add_review(Global.customer!.id, product_data.product.id, productController.review_controller.text);
+                          });
+                        }
                       });
+
+
                     }
-                  });
-
-
-                }
-              }
-            },
-            child:
-          Padding(padding: EdgeInsets.all(8),child: Text(App_Localization.of(context)!.translate("post"),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),),)
+                  }
+                },
+                child: Padding(padding: EdgeInsets.all(8),child: Text(App_Localization.of(context)!.translate("post"),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),),),
+            ),
+          )
         ],
       ),
     );

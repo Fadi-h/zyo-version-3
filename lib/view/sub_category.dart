@@ -17,6 +17,7 @@ class SubCategoryView extends StatelessWidget {
   RxList<Product> products;
   SubCategoryView(this.title, this.products){
     subCategoryController.products=this.products;
+    subCategoryController.title=this.title;
   }
 
   SubCategoryController subCategoryController = Get.put(SubCategoryController());
@@ -99,7 +100,7 @@ class SubCategoryView extends StatelessWidget {
                       onTap: () {
                         Get.back();
                       },
-                      child: Text(title,
+                      child: Text(subCategoryController.title,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 18
@@ -272,7 +273,8 @@ class SubCategoryView extends StatelessWidget {
         context: context,
         delegate: SearchTextField(suggestion_list: Global.suggestion_list,homeController: homeController));
     // homeController.get_products_by_search(result!, context);
-    homeController.go_to_search_page(result!);
+    // homeController.go_to_search_page(result!);
+
 
   }
 }
@@ -334,7 +336,7 @@ class SearchTextField extends SearchDelegate<String> {
     final suggestions = suggestion_list.where((name) {
       return name.toLowerCase().contains(query.toLowerCase());
     });
-    // homeController.go_to_search_page(query);
+    homeController.go_to_search_page_sub_category(query);
     // close(context, query);
     return Container(
       color: Colors.black,
@@ -363,7 +365,9 @@ class SearchTextField extends SearchDelegate<String> {
             ),
             onTap: () {
               query = suggestions.elementAt(index);
-              close(context, query);
+              // close(context, query);
+              homeController.go_to_search_page_sub_category(query);
+              // close(context, query);
             },
           );
         },

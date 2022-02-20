@@ -4,18 +4,15 @@ class ProductData {
   ProductData({
     required this.product,
     required this.review,
-    required this.size,
     required this.subProduct,
   });
   late final Product product;
   late final List<Review> review;
-  late final List<Size> size;
   late final List<SubProduct> subProduct;
 
   ProductData.fromJson(Map<String, dynamic> json){
     product = Product.fromJson(json['product']);
     review = List.from(json['review']).map((e)=>Review.fromJson(e)).toList();
-    size = List.from(json['size']).map((e)=>Size.fromJson(e)).toList();
     subProduct = List.from(json['sub_product']).map((e)=>SubProduct.fromJson(e)).toList();
   }
 
@@ -23,7 +20,6 @@ class ProductData {
     final _data = <String, dynamic>{};
     _data['product'] = product.toJson();
     _data['review'] = review.map((e)=>e.toJson()).toList();
-    _data['size'] = size.map((e)=>e.toJson()).toList();
     _data['sub_product'] = subProduct.map((e)=>e.toJson()).toList();
     return _data;
   }
@@ -161,9 +157,11 @@ class Size {
     required this.productId,
     required this.title,
     required this.details,
+    required this.availability,
   });
   late final int id;
   late final int productId;
+  late final int availability;
   late final String title;
   late final String details;
 
@@ -172,6 +170,7 @@ class Size {
     productId = json['product_id'];
     title = json['title'];
     details = json['details'];
+    availability = json['availability']==null?0:json['availability'];
   }
 
   Map<String, dynamic> toJson() {
@@ -180,6 +179,7 @@ class Size {
     _data['product_id'] = productId;
     _data['title'] = title;
     _data['details'] = details;
+    _data['availability'] = availability;
     return _data;
   }
 }
@@ -192,7 +192,10 @@ class SubProduct {
     required this.color,
     required this.degree,
     required this.images,
+    required this.size,
+
   });
+  late final List<Size> size;
   late final int id;
   late final int productId;
   late final int colorId;
@@ -207,6 +210,7 @@ class SubProduct {
     color = json['color'];
     degree = json['degree'];
     images = List.from(json['images']).map((e)=>Images.fromJson(e)).toList();
+    size = List.from(json['size']).map((e)=>Size.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -217,6 +221,7 @@ class SubProduct {
     _data['color'] = color;
     _data['degree'] = degree;
     _data['images'] = images.map((e)=>e.toJson()).toList();
+    _data['size'] = size.map((e)=>e.toJson()).toList();
     return _data;
   }
 }
